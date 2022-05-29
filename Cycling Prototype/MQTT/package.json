@@ -1,0 +1,16 @@
+{
+  "name": "cycling-prototype",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "sharni",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "mqtt": "^4.3.7",
+    "serialport": "^10.4.0"
+  }
+}
