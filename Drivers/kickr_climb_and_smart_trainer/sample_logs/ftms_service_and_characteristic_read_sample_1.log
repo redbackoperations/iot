@@ -1,0 +1,110 @@
+Connecting to the BLE device...
+[2b:80:03:12:bf:dd] Resolved services
+[2b:80:03:12:bf:dd]	Service [0000fab0-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [0000fab2-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [0000fab1-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [0000fab3-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]	Service [0000180f-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [00002a19-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(70)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]	Service [0000fff0-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [0000fff5-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(0), dbus.Byte(16), dbus.Byte(16), dbus.Byte(32), dbus.Byte(246)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [0000fff4-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [0000fff3-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [0000fff2-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(1), dbus.Byte(188), dbus.Byte(0), dbus.Byte(3), dbus.Byte(6)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [0000fff1-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(245), dbus.Byte(16), dbus.Byte(16), dbus.Byte(32), dbus.Byte(246)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]	Service [00001826-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [d18d2c10-c44c-11e8-a355-529269fb1459]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [00002ada-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [00002ad9-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [00002ad8-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(0), dbus.Byte(0), dbus.Byte(231), dbus.Byte(3), dbus.Byte(1), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002ad7-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002ad6-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(0), dbus.Byte(0), dbus.Byte(100), dbus.Byte(0), dbus.Byte(1), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002ad4-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(247), dbus.Byte(2), dbus.Byte(22), dbus.Byte(37), dbus.Byte(38), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002ad3-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(1), dbus.Byte(1)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002ad2-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  None
+[2b:80:03:12:bf:dd]		Characteristic [00002acc-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(134), dbus.Byte(82), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]	Service [0000180a-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [00002a29-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(89), dbus.Byte(69), dbus.Byte(83), dbus.Byte(79), dbus.Byte(85), dbus.Byte(76), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a28-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(86), dbus.Byte(49), dbus.Byte(46), dbus.Byte(48), dbus.Byte(46), dbus.Byte(48), dbus.Byte(95), dbus.Byte(50), dbus.Byte(48), dbus.Byte(50), dbus.Byte(49), dbus.Byte(48), dbus.Byte(51), dbus.Byte(51), dbus.Byte(49), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a27-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(77), dbus.Byte(49), dbus.Byte(95), dbus.Byte(86), dbus.Byte(49), dbus.Byte(46), dbus.Byte(50), dbus.Byte(95), dbus.Byte(50), dbus.Byte(48), dbus.Byte(49), dbus.Byte(50), dbus.Byte(49), dbus.Byte(49), dbus.Byte(95), dbus.Byte(87), dbus.Byte(56), dbus.Byte(49), dbus.Byte(48), dbus.Byte(48), dbus.Byte(95), dbus.Byte(77), dbus.Byte(50), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a26-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(86), dbus.Byte(49), dbus.Byte(50), dbus.Byte(56)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a25-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(77), dbus.Byte(49), dbus.Byte(48), dbus.Byte(49), dbus.Byte(89), dbus.Byte(83), dbus.Byte(50), dbus.Byte(49), dbus.Byte(48), dbus.Byte(56), dbus.Byte(49), dbus.Byte(51), dbus.Byte(57), dbus.Byte(54), dbus.Byte(49)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a24-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(121), dbus.Byte(115), dbus.Byte(45), dbus.Byte(48), dbus.Byte(48), dbus.Byte(50), dbus.Byte(0)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]		Characteristic [00002a23-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(43), dbus.Byte(128), dbus.Byte(3), dbus.Byte(18), dbus.Byte(191), dbus.Byte(221)], signature=dbus.Signature('y'))
+[2b:80:03:12:bf:dd]	Service [00001801-0000-1000-8000-00805f9b34fb]
+[2b:80:03:12:bf:dd]		Characteristic [00002a05-0000-1000-8000-00805f9b34fb]
+The characteristic value is:  dbus.Array([dbus.Byte(0), dbus.Byte(0), dbus.Byte(0), dbus.Byte(0)], signature=dbus.Signature('y'))
+The resistance level range is: [0, 0, 100, 0, 1, 0]
+Initiating to reset control settings...
+Resetting FTMS control settings...
+Running the device manager now...
+CONNACK received with code Success.
+Subscribed: 1 [<paho.mqtt.reasoncodes.ReasonCodes object at 0xb4fece50>, <paho.mqtt.reasoncodes.ReasonCodes object at 0xb4fdaec8>]
+The updated value for 00002a19-0000-1000-8000-00805f9b34fb is: b'F'
+The updated value for 0000fff5-0000-1000-8000-00805f9b34fb is: b'\x00\x10\x10 \xf6'
+The updated value for 0000fff2-0000-1000-8000-00805f9b34fb is: b'\x01\xbc\x00\x03\x06'
+The updated value for 0000fff1-0000-1000-8000-00805f9b34fb is: b'\xf5\x10\x10 \xf6'
+The updated value for 00002ad8-0000-1000-8000-00805f9b34fb is: b'\x00\x00\xe7\x03\x01\x00'
+The updated value for 00002ad7-0000-1000-8000-00805f9b34fb is: b'\x00\x00\x00\x00\x00\x00'
+The updated value for 00002ad6-0000-1000-8000-00805f9b34fb is: b'\x00\x00d\x00\x01\x00'
+The updated value for 00002ad4-0000-1000-8000-00805f9b34fb is: b'\xf7\x02\x16%&\x00'
+The updated value for 00002ad3-0000-1000-8000-00805f9b34fb is: b'\x01\x01'
+The updated value for 00002acc-0000-1000-8000-00805f9b34fb is: b'\x86R\x00\x00\x00\x00\x00\x00'
+The updated value for 00002a29-0000-1000-8000-00805f9b34fb is: b'YESOUL\x00'
+The updated value for 00002a28-0000-1000-8000-00805f9b34fb is: b'V1.0.0_20210331\x00'
+The updated value for 00002a27-0000-1000-8000-00805f9b34fb is: b'M1_V1.2_201211_W8100_M2\x00'
+The updated value for 00002a26-0000-1000-8000-00805f9b34fb is: b'V128'
+The updated value for 00002a25-0000-1000-8000-00805f9b34fb is: b'M101YS210813961'
+The updated value for 00002a24-0000-1000-8000-00805f9b34fb is: b'ys-002\x00'
+The updated value for 00002a23-0000-1000-8000-00805f9b34fb is: b'+\x80\x03\x12\xbf\xdd'
+The updated value for 00002a05-0000-1000-8000-00805f9b34fb is: b'\x00\x00\x00\x00'
+The updated value for 00002ad6-0000-1000-8000-00805f9b34fb is: b'\x00\x00d\x00\x01\x00'
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+[MQTT message published] mid: 2
+[MQTT message published] mid: 3
+[MQTT message received for Topic: 'bike/000001/resistance', QOS: 0]  256
+Skip invalid resistance value: 256
+[MQTT message received for Topic: 'bike/000001/resistance', QOS: 0]  255
+Trying to set a new resistance value: 255
+Requesting FTMS control...
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new resistance has been set successfully: 255
+[MQTT message published] mid: 4
+[MQTT message received for Topic: 'bike/000001/incline', QOS: 0]  -10
+Trying to set a new inclination value: -10
+Requesting FTMS control...
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new value has been written to 00002ad9-0000-1000-8000-00805f9b34fb
+A new inclination has been set successfully: -10
+[MQTT message published] mid: 5
+
+^CExit the program.
