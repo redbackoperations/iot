@@ -1,0 +1,28 @@
+{
+  "name": "sensors-backend",
+  "version": "1.0.0",
+  "description": "Backend services for storing sensors data and providing the corresonding APIs for them",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "mongodb": "^4.9.0",
+    "mongoose": "^6.5.3",
+    "mqtt": "^4.3.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.0",
+    "prettier": "2.7.1"
+  }
+}
