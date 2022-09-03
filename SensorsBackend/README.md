@@ -23,7 +23,11 @@
 4. Run a sensor data processor in CLI to initiate the service. For instance, run the following to start up the "speed and cadence data processor":
 
 ```
- node ./src/services/sensor-data-processors/speedAndCadence.js
+npx ts-node ./src/services/sensor-data-processors/speedAndCadence.ts
+
+or
+
+npm run speed-and-cadence-data-processor
 ```
 
 5. Manually publish a sensor data MQTT message via the corresponding MQTT reporting topic you've assigned before. For instance, publish a `20.0` message via `bike/000001/speed` topic will let `speedAndCadence.js` processor save a new Speed data entry in MongoDB as follows:
@@ -40,4 +44,89 @@
 
 ## How to Test A Sensor Data API
 
-TBC...
+1. Set your own Basic Auth Creds in `.env` file.
+
+2. Start the local dev server:
+
+```
+npm run dev
+```
+
+3. Make API calls to read speed and cadence data with Basic Auth credentials. Sample requests are shown below:
+
+```
+GET /api/sensors/speed?before=2023-01-01T12:41:22.500Z&after=2022-01-01T12:41:22.500Z&bikeNumber=00001
+
+Response:
+{
+    "speed": {
+        "metadata": {
+            "bikeNumber": "00001"
+        },
+        "_id": "630b72bd70b426c9c0beac2a",
+        "reportedAt": "2022-08-28T13:50:53.831Z",
+        "value": 12,
+        "__v": 0
+    }
+}
+
+GET /api/sensors/cadence?before=2023-01-01T12:41:22.500Z&after=2022-01-01T12:41:22.500Z&bikeNumber=00002
+
+Response:
+{
+    "cadence": {
+        "metadata": {
+            "bikeNumber": "00002"
+        },
+        "_id": "6313648c0a693e160b9352fb",
+        "reportedAt": "2022-09-03T14:28:28.029Z",
+        "value": 34444,
+        "__v": 0
+    }
+}
+
+
+GET /api/sensors/speeds?before=2023-01-01T12:41:22.500Z&after=2022-01-01T12:41:22.500Z&limit=2&bikeNumber=00002
+
+Response:
+{
+    "speeds": [
+        {
+            "metadata": {
+                "bikeNumber": "00002"
+            },
+            "_id": "6313626b808c027fc2e7920c",
+            "reportedAt": "2022-09-03T14:19:23.527Z",
+            "value": 34444,
+            "__v": 0
+        },
+        {
+            "metadata": {
+                "bikeNumber": "00002"
+            },
+            "_id": "63134b72cd372c259ec92e84",
+            "reportedAt": "2022-09-03T12:41:22.540Z",
+            "value": 34444,
+            "__v": 0
+        }
+    ]
+}
+
+GET /api/sensors/cadences?before=2023-01-01T12:41:22.500Z&limit=2&bikeNumber=00001
+
+Response:
+{
+    "cadences": [
+        {
+            "metadata": {
+                "bikeNumber": "00001"
+            },
+            "_id": "6313654f0a693e160b9352fd",
+            "reportedAt": "2022-09-03T14:31:43.529Z",
+            "value": 34444,
+            "__v": 0
+        }
+    ]
+}
+
+```
