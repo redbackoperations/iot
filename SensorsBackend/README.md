@@ -41,7 +41,6 @@ npm run speed-and-cadence-data-processor
   __v: 0
 }
 ```
-
 ## How to Test A Sensor Data API
 
 1. Set your own Basic Auth Creds in `.env` file.
