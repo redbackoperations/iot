@@ -1,6 +1,15 @@
-import mongoose from 'mongoose'
+import { model, Schema } from 'mongoose'
 
-const CadenceSchema = new mongoose.Schema(
+interface ISpeed {
+  value: number
+  reportedAt: Date
+  metadata: {
+    bikeNumber: string
+    sensorName?: string
+  }
+}
+
+const speedSchema = new Schema<ISpeed>(
   {
     value: { type: Number, min: 0.0 },
     reportedAt: { type: Date, default: Date.now },
@@ -19,6 +28,6 @@ const CadenceSchema = new mongoose.Schema(
   }
 )
 
-const Cadence = mongoose.model('Cadence', CadenceSchema)
+const speedModel = model<ISpeed>('Speed', speedSchema)
 
-export default Cadence
+export { speedModel, ISpeed }
