@@ -1,0 +1,69 @@
+[Service UUID: a026ee0b0a7d4ab397faf1500f9feb8b]
+[UUID: a026e0370a7d4ab397faf1500f9feb8b]
+
+Value: 66 6c 07 => 19% (and going down from here)
+Value: 66 3a 07
+Value: 66 08 07
+Value: 66 d6 06
+Value: 66 a4 06
+Value: 66 72 06
+Value: 66 40 06
+Value: 66 0e 06
+Value: 66 dc 05
+Value: 66 aa 05
+Value: 66 b0 04
+Value: 66 52 03
+Value: 66 26 02
+Value: 66 90 01
+Value: 66 fa 00
+Value: 66 c8 00
+Value: 66 96 00
+Value: 66 64 00
+Value: 66 32 00
+Value: 66 00 00 => 0% (and going down to negative)
+Value: 66 cf ff
+Value: 66 6b ff
+Value: 66 39 ff
+Value: 66 07ff
+Value: 66 a3 fe
+Value: 66 d5 fe
+Value: 66 3f fe
+Value: 66 a9 fd
+Value: 66 45 fd
+Value: 66 af fc
+Value: 66 7d fc
+Value: 66 4b fc
+Value: 66 19 fc  => -10% (and going up to 0)
+Value: 66 4b fc
+Value: 66 7d fc
+Value: 66 af fc
+Value: 66 e1 fc
+Value: 66 13 fd
+Value: 66 45 fd
+Value: 66 0d fe
+Value: 66 3f fe
+Value: 66 71 fe
+Value: 66 3f fe
+Value: 66 d5 fe
+Value: 66 07 ff
+Value: 66 39 ff
+Value: 66 6b ff
+Value: 66 9d ff
+Value: 66 cf ff
+Value: 66 00 00 => 0% (and going up to positve)
+Value: 66 5e 01
+Value: 66 bc 02
+Value: 66 32 00
+Value: 66 64 00
+Value: 66 fa 00
+Value: 66 f4 01
+Value: 66 58 02
+Value: 66 20 03
+Value: 66 84 03
+Value: 66 1a 04
+Value: 66 b0 04
+Value: 66 aa 05
+Value: 66 72 06
+Value: 66 a4 06
+Value: 66 3a 07
+Value: 66 6c 07 => 19%
