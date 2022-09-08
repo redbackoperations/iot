@@ -95,7 +95,7 @@ mqttClient.on('connect', () => {
           console.log('Saving a new Incline data successfully:', doc)
         })
     }
-    // save Cadence data
+    // save Fan data
     else if (topic.includes(`/${FAN_TOPIC_KEY}`)) {
       const fan = new fanModel()
       fan.value = Number(message)
