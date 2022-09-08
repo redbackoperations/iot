@@ -6,8 +6,9 @@ import { powerModel } from '../../models/power'
 import { heartrateModel } from '../../models/heartrate'
 import { resistanceModel } from '../../models/resistance'
 import { inclineModel } from '../../models/incline'
+import { inclineModel } from '../../models/fan'
 import mqttClient from '../../lib/mqttClient'
-import { SPEED_TOPIC_KEY, CADENCE_TOPIC_KEY, POWER_TOPIC_KEY, HEARTRATE_TOPIC_KEY, RESISTANCE_TOPIC_KEY, INCLINE_TOPIC_KEY } from '../../lib/constants'
+import { SPEED_TOPIC_KEY, CADENCE_TOPIC_KEY, POWER_TOPIC_KEY, HEARTRATE_TOPIC_KEY, RESISTANCE_TOPIC_KEY, INCLINE_TOPIC_KEY, FAN_TOPIC_KEY } from '../../lib/constants'
 import { findBikeNumber } from '../../lib/mqttHelper'
 
 
@@ -94,6 +95,17 @@ mqttClient.on('connect', () => {
           console.log('Saving a new Incline data successfully:', doc)
         })
     }
+    // save Cadence data
+    else if (topic.includes(`/${FAN_TOPIC_KEY}`)) {
+      const fan = new fanModel()
+      fan.value = Number(message)
+      fan.metadata.bikeNumber = findBikeNumber(topic)
+  
+      fan.save((err, doc) => {
+        if (err) return console.error('Failed to save a Fan data', err)
+        console.log('Saving a new Fan data successfully:', doc)
+      })
+    }
     // report error otherwise
     else {
       console.log('Unidentified topic:', topic)
@@ -107,6 +119,7 @@ mqttClient.subscribe(process.env.MQTT_POWER_TOPIC)
 mqttClient.subscribe(process.env.MQTT_HEARTRATE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_RESISTANCE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_INCLINE_TOPIC)
+mqttClient.subscribe(process.env.MQTT_FAN_TOPIC)
 
 // connect to MongoDB
 mongoose
