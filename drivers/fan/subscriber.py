@@ -3,6 +3,8 @@ from mqtt_client import MQTTClient
 import os
 import time
 
+# Receive messages from the fan topic and dump them to the console for debugging
+
 def message(client, userdata, msg):
     print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 

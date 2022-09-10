@@ -6,6 +6,7 @@ import struct
 
 manager = gatt.DeviceManager(adapter_name='hci0')
 
+# Send a given value to the fan through Bluetooth
 class AnyDevice(gatt.Device):
 	def services_resolved(self):
 		super().services_resolved()
