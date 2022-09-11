@@ -1,6 +1,7 @@
 import express from 'express'
 import * as dotenv from 'dotenv'
 import basicAuth from 'express-basic-auth'
+import cors from 'cors'
 import apiRouter from './routes/api'
 import './lib/dbConnection'
 import { getUnauthorizedResponse } from './lib/authHelper'
@@ -12,6 +13,9 @@ const app = express()
 
 // Common middlewares
 app.use(express.json())
+app.use(cors())
+
+// TODO: add server logger later
 
 // define a route handler for the default home page
 app.get('/', (req, res) => {

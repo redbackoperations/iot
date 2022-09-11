@@ -152,3 +152,17 @@ Response:
     ]
 }
 ```
+
+## How to Seed Data
+
+- To seed bikes data, run the following:
+
+```
+npm run seed-bikes-data
+```
+
+- To seed devices data, run the following:
+
+```
+npm run seed-devices-data
+```
