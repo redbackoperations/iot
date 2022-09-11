@@ -1,3 +1,5 @@
 const findBikeNumber = (topicName: string) => topicName.match(/\d+/) && topicName.match(/\d+/)[0]
 
-export { findBikeNumber }
+const deviceNameFromTopic = (topicName: string) => topicName.split('/').pop().toLowerCase()
+
+export { findBikeNumber, deviceNameFromTopic }

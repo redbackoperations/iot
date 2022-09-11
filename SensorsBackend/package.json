@@ -16,7 +16,7 @@
     "dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "speed-and-cadence-data-processor": "ts-node src/services/sensor-data-processors/speedAndCadence.ts",
+    "device-data-processor": "ts-node src/services/sensor-data-processors/MQTTFeed.ts",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
   },
   "directories": {

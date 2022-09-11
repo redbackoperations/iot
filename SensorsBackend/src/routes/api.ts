@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import sensorsRouter from './sensors/base'
+import deviceDataRouter from './device-data/base'
 
 // Export the base-router
 const apiRouter = Router()
 
 // Setup routers
-apiRouter.use('/', sensorsRouter)
+apiRouter.use('/', deviceDataRouter)
 
 export default apiRouter

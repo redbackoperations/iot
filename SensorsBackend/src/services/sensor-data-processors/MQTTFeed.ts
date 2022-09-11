@@ -1,125 +1,68 @@
 import * as dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { speedModel } from '../../models/speed'
-import { cadenceModel } from '../../models/cadence'
-import { powerModel } from '../../models/power'
-import { heartrateModel } from '../../models/heartrate'
-import { resistanceModel } from '../../models/resistance'
-import { inclineModel } from '../../models/incline'
-import { inclineModel } from '../../models/fan'
+import { deviceDataModel, IMQTTDeviceData } from '../../models/device-data'
 import mqttClient from '../../lib/mqttClient'
-import { SPEED_TOPIC_KEY, CADENCE_TOPIC_KEY, POWER_TOPIC_KEY, HEARTRATE_TOPIC_KEY, RESISTANCE_TOPIC_KEY, INCLINE_TOPIC_KEY, FAN_TOPIC_KEY } from '../../lib/constants'
-import { findBikeNumber } from '../../lib/mqttHelper'
-
-
-
+import { DEVICE_DATA_TOPICS } from '../../lib/constants'
+import { findBikeNumber, deviceNameFromTopic } from '../../lib/mqttHelper'
+import { DeviceType } from '../../models/device'
 
 dotenv.config()
 
 // setup the callbacks
 mqttClient.on('connect', () => {
-    console.log('Connected to the MQTT broker!')
-  })
-  
-  mqttClient.on('error', (error) => {
-    console.log(error)
-  })
+  console.log('Connected to the MQTT broker!')
+})
 
-  mqttClient.on('message', (topic, message) => {
-    // called each time a message is received
-    console.log(`[${topic}] Received message:`, message.toString())
-  
-    // save Speed data
-    if (topic.includes(`/${SPEED_TOPIC_KEY}`)) {
-      const speed = new speedModel()
-      speed.value = Number(message)
-      speed.metadata.bikeNumber = findBikeNumber(topic)
-  
-      speed.save((err, doc) => {
-        if (err) return console.error('Failed to save a Speed data', err)
-        console.log('Saving a new Speed data successfully:', doc)
+mqttClient.on('error', (error) => {
+  console.log(error)
+})
+
+// the message needs to be a JSON type to be able to retrive device data value, device name, device_type, unit name, user id, bike id workout id, etc in one go
+mqttClient.on('message', (topic, message) => {
+  // called each time a message is received
+  console.log(`[${topic}] Received message:`, message.toString())
+
+  // save device data
+  const deviceNamePart = deviceNameFromTopic(topic)
+  const deviceType = DEVICE_DATA_TOPICS.find((deviceDataTopic) =>
+    deviceDataTopic.match(deviceNamePart)
+  )
+
+  if (deviceType) {
+    try {
+      const payload = JSON.parse(message.toString()) as IMQTTDeviceData
+
+      const deviceData = new deviceDataModel(payload)
+      // ensure to convert value from string to float number
+      deviceData.value = Number(payload.value)
+      // manually assign device type
+      deviceData.deviceType = deviceType as DeviceType
+      // mannually assign bike name if not provided
+      if (!payload.bikeName) deviceData.bikeName = findBikeNumber(topic)
+
+      deviceData.save((err, doc) => {
+        if (err) return console.error(`[${topic}] Failed to save a device data`, err)
+        console.log('Saving a new device data successfully:', doc)
       })
+    } catch (err) {
+      console.error(`[${topic}] Failed to save a device data`, err)
     }
-    // save Cadence data
-    else if (topic.includes(`/${CADENCE_TOPIC_KEY}`)) {
-      const cadence = new cadenceModel()
-      cadence.value = Number(message)
-      cadence.metadata.bikeNumber = findBikeNumber(topic)
-  
-      cadence.save((err, doc) => {
-        if (err) return console.error('Failed to save a Cadence data', err)
-        console.log('Saving a new Cadence data successfully:', doc)
-      })
-    }
-    // save Power data
-    else if (topic.includes(`/${POWER_TOPIC_KEY}`)) {
-        const power = new powerModel()
-        power.value = Number(message)
-        power.metadata.bikeNumber = findBikeNumber(topic)
-    
-        power.save((err, doc) => {
-          if (err) return console.error('Failed to save a Power data', err)
-          console.log('Saving a new Power data successfully:', doc)
-        })
-    }
-    // save Heartrate data
-    else if (topic.includes(`/${HEARTRATE_TOPIC_KEY}`)) {
-        const heartrate = new heartrateModel()
-        heartrate.value = Number(message)
-        heartrate.metadata.bikeNumber = findBikeNumber(topic)
-    
-        heartrate.save((err, doc) => {
-          if (err) return console.error('Failed to save a Heartrate data', err)
-          console.log('Saving a new Heartrate data successfully:', doc)
-        })
-    }
-    // save Resistance data
-    else if (topic.includes(`/${RESISTANCE_TOPIC_KEY}`)) {
-        const resistance = new resistanceModel()
-        resistance.value = Number(message)
-        resistance.metadata.bikeNumber = findBikeNumber(topic)
-    
-        resistance.save((err, doc) => {
-          if (err) return console.error('Failed to save a Resistance data', err)
-          console.log('Saving a new Resistance data successfully:', doc)
-        })
-    }
-    // save Incline data
-    else if (topic.includes(`/${INCLINE_TOPIC_KEY}`)) {
-        const incline = new inclineModel()
-        incline.value = Number(message)
-        incline.metadata.bikeNumber = findBikeNumber(topic)
-    
-        incline.save((err, doc) => {
-          if (err) return console.error('Failed to save a Incline data', err)
-          console.log('Saving a new Incline data successfully:', doc)
-        })
-    }
-    // save Fan data
-    else if (topic.includes(`/${FAN_TOPIC_KEY}`)) {
-      const fan = new fanModel()
-      fan.value = Number(message)
-      fan.metadata.bikeNumber = findBikeNumber(topic)
-  
-      fan.save((err, doc) => {
-        if (err) return console.error('Failed to save a Fan data', err)
-        console.log('Saving a new Fan data successfully:', doc)
-      })
-    }
-    // report error otherwise
-    else {
-      console.log('Unidentified topic:', topic)
-    }
-  })
+  }
+  // report error otherwise
+  else {
+    console.log('Unidentified topic:', topic)
+  }
+})
 
 // subscribe to all topics as per MQTTv2 PowerPoint Presentation
+// TODO: get all topics from Bike/Device DB records instead
 mqttClient.subscribe(process.env.MQTT_SPEED_TOPIC)
 mqttClient.subscribe(process.env.MQTT_CADENCE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_POWER_TOPIC)
-mqttClient.subscribe(process.env.MQTT_HEARTRATE_TOPIC)
+mqttClient.subscribe(process.env.MQTT_HEART_RATE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_RESISTANCE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_INCLINE_TOPIC)
-mqttClient.subscribe(process.env.MQTT_FAN_TOPIC)
+mqttClient.subscribe(process.env.MQTT_HEAD_WIND_TOPIC)
 
 // connect to MongoDB
 mongoose
