@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
 import Dashboard from './pages/Dashboard'
 import Bikes from './pages/Bikes'
+import UpsertBike from './pages/UpsertBike'
+import UpsertDevice from './pages/UpsertDevice'
 import Devices from './pages/Devices'
 import DeviceData from './pages/DeviceData'
 import TopBar from './components/TopBar'
@@ -18,12 +20,16 @@ function App() {
       <CssBaseline />
       <TopBar />
       <SideBar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ p: 3, width: 1 }}>
         <Toolbar />
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="bikes" element={<Bikes />} />
+          <Route path="bikes/new" element={<UpsertBike />} />
+          <Route path="bikes/:id/edit" element={<UpsertBike />} />
           <Route path="devices" element={<Devices />} />
+          <Route path="devices/new" element={<UpsertDevice />} />
+          <Route path="devices/:id/edit" element={<UpsertDevice />} />
           <Route path="device-data" element={<DeviceData />} />
         </Routes>
       </Box>

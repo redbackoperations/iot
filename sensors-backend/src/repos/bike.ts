@@ -30,7 +30,35 @@ const getMany = async ({ name, _id }: BikeFilter): Promise<IBike[] | null> => {
   return bikes
 }
 
+/**
+ * Create a bike record
+ */
+const create = async (payload: IBike): Promise<IBike> => {
+  return await bikeModel.create(payload)
+}
+
+/**
+ * Update a bike record
+ */
+const update = async (id: string, payload: IBike): Promise<IBike> => {
+  return await bikeModel.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  })
+}
+
+/**
+ * Delete a bike record
+ */
+const _delete = async (id: string): Promise<IBike> => {
+  return await bikeModel.findByIdAndDelete(id)
+}
+
 export default {
   getOne,
   getMany,
+  create,
+  update,
+  delete: _delete,
 }

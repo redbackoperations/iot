@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose'
+import uniqueValidator from 'mongoose-unique-validator'
 
 interface IBike {
   name: string
@@ -12,16 +13,17 @@ interface IBike {
 
 const bikeSchema = new Schema<IBike>(
   {
-    name: { type: String },
+    name: { type: String, required: true, unique: true },
     label: { type: String },
     description: { type: String },
-    mqttTopicPrefix: { type: String },
-    mqttReportTopicSuffix: { type: String },
+    mqttTopicPrefix: { type: String, required: true },
+    mqttReportTopicSuffix: { type: String, required: true },
     createdAt: { type: Date },
     updatedAt: { type: Date },
   },
   { timestamps: true }
 )
+bikeSchema.plugin(uniqueValidator)
 
 const bikeModel = model<IBike>('Bike', bikeSchema)
 
