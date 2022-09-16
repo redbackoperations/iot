@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import Button from '@mui/material/Button'
+import { teal } from '@mui/material/colors'
 import { styled } from '@mui/material/styles'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell, { tableCellClasses } from '@mui/material/TableCell'
@@ -7,9 +12,12 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import EditIcon from '@mui/icons-material/Edit'
+import Typography from '@mui/material/Typography'
 import axiosClient from '../lib/axiosClient'
 import { jsonFields } from '../lib/jsonHelper'
-import ErrorPopup from '../components/ErrorPopup'
+import AlertPopup from '../components/AlertPopup'
+import IBike from '../interfaces/bike'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -33,25 +41,38 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 function Bikes() {
   const [axiosError, setAxiosError] = useState<string | null>(null)
-  const [bikeData, setBikes] = useState<any | null>(null)
+  const [bikeData, setBikes] = useState<IBike[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     axiosClient
       .get('/bikes')
       .then((response: any) => {
-        console.log(response)
+        setLoading(false)
         setBikes(response.data.bikes)
       })
       .catch((error) => {
-        const errorMessage = `Get device data failed: ${error.message}`
-        console.error(errorMessage)
-        setAxiosError(errorMessage)
+        setLoading(false)
+        const message = `Get device data failed: ${error.message}`
+        console.error(message)
+        setAxiosError(message)
       })
   }, [])
 
+  if (loading) {
+    return <CircularProgress />
+  }
+
   return (
     <>
-      {bikeData ? (
+      <Box mb={1} display="flex" justifyContent="flex-start" alignItems="flex-start">
+        <Link to="/bikes/new" className="button-link">
+          <Button variant="contained" sx={{ background: teal['A700'] }}>
+            Create
+          </Button>
+        </Link>
+      </Box>
+      {bikeData && bikeData.length > 0 ? (
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 500 }} aria-label="bikes-table">
             <TableHead>
@@ -59,6 +80,7 @@ function Bikes() {
                 {Object.keys(bikeData[0]).map((fieldName) => (
                   <StyledTableCell key={fieldName}>{fieldName}</StyledTableCell>
                 ))}
+                <StyledTableCell key={'actions'}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -66,20 +88,41 @@ function Bikes() {
                 <StyledTableRow key={row._id}>
                   {Object.keys(bikeData[0]).map((fieldName) => (
                     <StyledTableCell key={`${row._id}-${fieldName}`}>
-                      {jsonFields.includes(fieldName)
-                        ? JSON.stringify(row[fieldName])
-                        : row[fieldName]}
+                      {fieldName === '_id' ? (
+                        <Link to={`/bikes/${row._id}/edit`}>{row[fieldName]}</Link>
+                      ) : jsonFields.includes(fieldName) ? (
+                        JSON.stringify(row[fieldName])
+                      ) : (
+                        row[fieldName]
+                      )}
                     </StyledTableCell>
                   ))}
+                  <StyledTableCell key={'actions'} sx={{ textAlign: 'center' }}>
+                    <Link to={`/bikes/${row._id}/edit`} className="button-link">
+                      <Button size="small" variant="outlined" startIcon={<EditIcon />}>
+                        Edit
+                      </Button>
+                    </Link>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       ) : (
-        <h5>Loading data ...</h5>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          mt={50}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          No bikes data yet!
+        </Typography>
       )}
-      {axiosError && <ErrorPopup errorMessage={axiosError} />}
+      {axiosError && <AlertPopup message={axiosError} />}
     </>
   )
 }

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { model, Schema } from 'mongoose'
+import uniqueValidator from 'mongoose-unique-validator'
 
 enum DeviceType {
   speed = 'speed',
@@ -52,12 +53,12 @@ const serviceSchema = new Schema<IService>({
 const deviceSchema = new Schema<IDevice>(
   {
     bikeId: { type: ObjectId },
-    name: { type: String },
+    name: { type: String, required: true, unique: true },
     label: { type: String },
     description: { type: String },
-    deviceType: { type: String, enum: DeviceType },
-    unitName: { type: String },
-    mqttTopicDeviceName: { type: String },
+    deviceType: { type: String, enum: DeviceType, required: true },
+    unitName: { type: String, required: true },
+    mqttTopicDeviceName: { type: String, required: true },
     bluetoothName: { type: String },
     bluetoothUUIDs: { type: [serviceSchema] },
     macAddress: { type: String },
@@ -68,6 +69,7 @@ const deviceSchema = new Schema<IDevice>(
   },
   { timestamps: true }
 )
+deviceSchema.plugin(uniqueValidator)
 
 const deviceModel = model<IDevice>('Device', deviceSchema)
 

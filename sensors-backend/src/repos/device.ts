@@ -40,7 +40,35 @@ const getMany = async ({
   return devices
 }
 
+/**
+ * Create a device record
+ */
+const create = async (payload: IDevice): Promise<IDevice> => {
+  return await deviceModel.create(payload)
+}
+
+/**
+ * Update a device record
+ */
+const update = async (id: string, payload: IDevice): Promise<IDevice> => {
+  return await deviceModel.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  })
+}
+
+/**
+ * Delete a device record
+ */
+const _delete = async (id: string): Promise<IDevice> => {
+  return await deviceModel.findByIdAndDelete(id)
+}
+
 export default {
   getOne,
   getMany,
+  create,
+  update,
+  delete: _delete,
 }

@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import axiosClient from '../lib/axiosClient'
 import { jsonFields } from '../lib/jsonHelper'
-import ErrorPopup from '../components/ErrorPopup'
+import AlertPopup from '../components/AlertPopup'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -43,9 +43,9 @@ function DeviceData() {
         setDeviceData(response.data.deviceDatas)
       })
       .catch((error) => {
-        const errorMessage = `Get device data failed: ${error.message}`
-        console.error(errorMessage)
-        setAxiosError(errorMessage)
+        const message = `Get device data failed: ${error.message}`
+        console.error(message)
+        setAxiosError(message)
       })
   }, [])
 
@@ -79,7 +79,7 @@ function DeviceData() {
       ) : (
         <h5>Loading data ...</h5>
       )}
-      {axiosError && <ErrorPopup errorMessage={axiosError} />}
+      {axiosError && <AlertPopup message={axiosError} />}
     </>
   )
 }
