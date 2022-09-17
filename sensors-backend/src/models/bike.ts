@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
 
 interface IBike {
+  _id: Schema.Types.ObjectId
   name: string
   label: string
   description: string
@@ -27,4 +28,4 @@ bikeSchema.plugin(uniqueValidator)
 
 const bikeModel = model<IBike>('Bike', bikeSchema)
 
-export { bikeModel, IBike }
+export { bikeModel, IBike, bikeSchema }

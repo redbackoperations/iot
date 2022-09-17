@@ -25,15 +25,17 @@ const data = [
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
-    console.log('Connected to MongoDB!')
+    console.log('Connected to MongoDB!\n')
 
     bikeModel
       .insertMany(data)
       .then(() => {
         console.log('Data inserted:', data)
+        process.exit()
       })
       .catch((error) => {
         console.error(`Failed to seed bikes data`, error)
+        process.exit(1)
       })
   })
   .catch((error) => console.error(error))

@@ -1,17 +1,18 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
 import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
+import Typography from '@mui/material/Typography'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
-import Home from '@mui/icons-material/Home'
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
+import HomeIcon from '@mui/icons-material/Home'
+import PeopleIcon from '@mui/icons-material/People'
 import DirectionsBike from '@mui/icons-material/DirectionsBike'
 import DevicesIcon from '@mui/icons-material/Devices'
 import DataObjectIcon from '@mui/icons-material/DataObject'
@@ -19,6 +20,8 @@ import DataObjectIcon from '@mui/icons-material/DataObject'
 const drawerWidth = 240
 
 function SideBar() {
+  const { pathname } = useLocation()
+
   return (
     <Drawer
       variant="permanent"
@@ -30,21 +33,25 @@ function SideBar() {
     >
       <Toolbar />
       <Box sx={{ overflow: 'auto' }}>
-        <List>
-          <Link to="/">
-            {' '}
-            <ListItem key={'home'} disablePadding>
+        <List sx={{ p: 0 }}>
+          <Link to="/" className="button-link">
+            <ListItem
+              key={'home'}
+              disablePadding
+              selected={pathname === '/'}
+              className="button-link"
+            >
               <ListItemButton>
                 <ListItemIcon>
-                  <Home />
+                  <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={'Home'} />
+                <ListItemText primary={'Dashboard'} />
               </ListItemButton>
             </ListItem>
           </Link>
 
-          <Link to="/bikes">
-            <ListItem key={'bike'} disablePadding>
+          <Link to="/bikes" className="button-link">
+            <ListItem key={'bike'} disablePadding selected={pathname === '/bikes'}>
               <ListItemButton>
                 <ListItemIcon>
                   <DirectionsBike />
@@ -53,8 +60,8 @@ function SideBar() {
               </ListItemButton>
             </ListItem>
           </Link>
-          <Link to="/devices">
-            <ListItem key={'device'} disablePadding>
+          <Link to="/devices" className="button-link">
+            <ListItem key={'device'} disablePadding selected={pathname === '/devices'}>
               <ListItemButton>
                 <ListItemIcon>
                   <DevicesIcon />
@@ -63,8 +70,8 @@ function SideBar() {
               </ListItemButton>
             </ListItem>
           </Link>
-          <Link to="/device-data">
-            <ListItem key={'device-data'} disablePadding>
+          <Link to="/device-data" className="button-link">
+            <ListItem key={'device-data'} disablePadding selected={pathname === '/device-data'}>
               <ListItemButton>
                 <ListItemIcon>
                   <DataObjectIcon />
@@ -75,15 +82,28 @@ function SideBar() {
           </Link>
         </List>
         <Divider />
-        <List>
-          {['Users', 'Workouts', 'Others'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+        <List sx={{ p: 0 }}>
+          <ListItem key={'users'} disablePadding selected={pathname === '/users'} disabled={true}>
+            <ListItemButton>
+              <ListItemIcon>
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Users'} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            key={'workouts'}
+            disablePadding
+            selected={pathname === '/workouts'}
+            disabled={true}
+          >
+            <ListItemButton>
+              <ListItemIcon>
+                <FitnessCenterIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Workouts'} />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Box>
     </Drawer>

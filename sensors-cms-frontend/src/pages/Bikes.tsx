@@ -65,7 +65,7 @@ function Bikes() {
 
   return (
     <>
-      <Box mb={1} display="flex" justifyContent="flex-start" alignItems="flex-start">
+      <Box mb={1} display="flex" justifyContent="flex-end" alignItems="flex-end">
         <Link to="/bikes/new" className="button-link">
           <Button variant="contained" sx={{ background: teal['A700'] }}>
             Create

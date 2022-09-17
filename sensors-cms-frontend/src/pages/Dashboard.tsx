@@ -1,33 +1,158 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import Link from '@mui/material/Link'
+import DataCountCard from '../components/DataCountCard'
+import DirectionsBike from '@mui/icons-material/DirectionsBike'
+import DevicesIcon from '@mui/icons-material/Devices'
+import DataObjectIcon from '@mui/icons-material/DataObject'
+import { lightBlue, teal, orange, cyan } from '@mui/material/colors'
+import LineChart from '../components/DeviceData/LineChart'
+import PieChart from '../components/DeviceData/PieChart'
+import RecentList from '../components/DeviceData/RecentList'
+import AlertPopup from '../components/AlertPopup'
+import { TotalCount, DeviceDataCount, ChartData } from '../interfaces/data-analytics'
+import DeviceData from '../interfaces/device-data'
+import axiosClient from '../lib/axiosClient'
+import { generateChartData, groupChartData } from '../lib/dataHelper'
+import { Dictionary } from 'lodash'
+import { DeviceType } from '../interfaces/device'
 
 function Dashboard() {
+  const [axiosError, setAxiosError] = useState<string | null>(null)
+  const [deviceData, setDeviceData] = useState<DeviceData[]>([])
+  const [totalCountData, setTotalCountData] = useState<TotalCount | null>(null)
+  const [deviceDataCountData, setDeviceDataCountData] = useState<DeviceDataCount | null>(null)
+  const [deviceDataloading, setDeviceDataLoading] = useState<boolean>(true)
+  const [totalCountloading, setTotalCountLoading] = useState<boolean>(true)
+  const [deviceDataCountloading, setDeviceDataCountloading] = useState<boolean>(true)
+
+  useEffect(() => {
+    axiosClient
+      .get('/data-analytics/total-count')
+      .then((response: any) => {
+        setTotalCountLoading(false)
+        setTotalCountData(response.data)
+      })
+      .catch((error) => {
+        setTotalCountLoading(false)
+        const message = `Get total count data failed: ${error.message}`
+        console.error(message)
+        setAxiosError(message)
+      })
+
+    axiosClient
+      .get('/data-analytics/device-data/total-count')
+      .then((response: any) => {
+        setDeviceDataCountloading(false)
+        setDeviceDataCountData(response.data)
+      })
+      .catch((error) => {
+        setDeviceDataCountloading(false)
+        const message = `Get total count for different device types failed: ${error.message}`
+        console.error(message)
+        setAxiosError(message)
+      })
+
+    axiosClient
+      .get('/device-data/many?limit=200')
+      .then((response: any) => {
+        setDeviceDataLoading(false)
+        setDeviceData(response.data.deviceDatas)
+      })
+      .catch((error) => {
+        setDeviceDataLoading(false)
+        const message = `Get device data failed: ${error.message}`
+        console.error(message)
+        setAxiosError(message)
+      })
+  }, [])
+
+  const groupedData = groupChartData(generateChartData(deviceData))
+
   return (
     <>
-      {/* TODO: Add Dashboard data later */}
-      <Typography paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum facilisis leo
-        vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum quisque
-        non tellus. Convallis convallis tellus id interdum velit laoreet id donec ultrices. Odio
-        morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit adipiscing bibendum est
-        ultricies integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate eu
-        scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis imperdiet massa
-        tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget arcu dictum
-        varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-        sapien faucibus et molestie ac.
-      </Typography>
-      <Typography paragraph>
-        Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-        facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac tincidunt.
-        Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
-        mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed vulputate
-        odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-        gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et tortor.
-        Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin nibh sit.
-        Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas accumsan lacus
-        vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-      </Typography>
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        alignContent={'center'}
+        textAlign="center"
+      >
+        <Grid item xs={12} md={4} lg={4}>
+          <DataCountCard
+            title="Bikes"
+            value={totalCountData?.bikes}
+            icon={<DirectionsBike />}
+            iconBgColor={lightBlue[300]}
+            sxProps={{
+              height: '200px',
+              width: '100%',
+              bgcolor: cyan[50],
+              boxShadow: 'none',
+            }}
+            loading={totalCountloading}
+            // description="number of bikes"
+          />
+        </Grid>
+        <Grid item xs={12} md={4} lg={4}>
+          <DataCountCard
+            title="Devices"
+            value={totalCountData?.devices}
+            icon={<DevicesIcon />}
+            iconBgColor={teal[300]}
+            sxProps={{
+              height: 200,
+              width: '100%',
+              bgcolor: cyan['A100'],
+              boxShadow: 'none',
+            }}
+            loading={totalCountloading}
+            // description="number of sensors/devices"
+          />
+        </Grid>
+        <Grid item xs={12} md={4} lg={4}>
+          <DataCountCard
+            title="Device Data"
+            value={totalCountData?.deviceData}
+            icon={<DataObjectIcon />}
+            iconBgColor={orange[300]}
+            sxProps={{
+              height: 200,
+              width: '100%',
+              bgcolor: cyan[100],
+              boxShadow: 'none',
+            }}
+            loading={totalCountloading}
+            // description="number of sensors/devices data"
+          />
+        </Grid>
+        <Grid item xs={12} md={3} lg={3}>
+          <PieChart data={deviceDataCountData} loading={deviceDataCountloading} />
+        </Grid>
+        {Object.values(DeviceType).map((deviceType) => (
+          <Grid
+            key={deviceType}
+            item
+            xs={12}
+            md={3}
+            lg={3}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-evenly',
+            }}
+          >
+            <LineChart data={groupedData && groupedData[deviceType]} loading={deviceDataloading} />
+          </Grid>
+        ))}
+
+        <Grid item xs={12} md={12} lg={12}>
+          <RecentList data={deviceData} loading={deviceDataloading} />
+        </Grid>
+      </Grid>
+      {axiosError && <AlertPopup message={axiosError} />}
     </>
   )
 }

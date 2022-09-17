@@ -12,9 +12,10 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import axiosClient from '../lib/axiosClient'
-import { jsonFields } from '../lib/jsonHelper'
+import { jsonFields, idFields } from '../lib/jsonHelper'
 import AlertPopup from '../components/AlertPopup'
 import IDevice from '../interfaces/device'
 
@@ -64,7 +65,7 @@ function Devices() {
 
   return (
     <>
-      <Box mb={1} display="flex" justifyContent="flex-start" alignItems="flex-start">
+      <Box mb={1} display="flex" justifyContent="flex-end" alignItems="flex-end">
         <Link to="/devices/new" className="button-link">
           <Button variant="contained" sx={{ background: teal['A700'] }}>
             Create
@@ -79,6 +80,7 @@ function Devices() {
                 {Object.keys(devices[0]).map((fieldName) => (
                   <StyledTableCell key={fieldName}>{fieldName}</StyledTableCell>
                 ))}
+                <StyledTableCell key={'actions'}></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -86,8 +88,14 @@ function Devices() {
                 <StyledTableRow key={row._id}>
                   {Object.keys(devices[0]).map((fieldName) => (
                     <StyledTableCell key={`${row._id}-${fieldName}`}>
-                      {fieldName === '_id' ? (
-                        <Link to={`/devices/${row._id}/edit`}>{row[fieldName]}</Link>
+                      {idFields.includes(fieldName) ? (
+                        <Link
+                          to={`/${
+                            fieldName === 'bikeId' ? `bikes/${row.bikeId}` : `devices/${row._id}`
+                          }/edit`}
+                        >
+                          {row[fieldName]}
+                        </Link>
                       ) : jsonFields.includes(fieldName) ? (
                         JSON.stringify(row[fieldName])
                       ) : (
@@ -95,6 +103,13 @@ function Devices() {
                       )}
                     </StyledTableCell>
                   ))}
+                  <StyledTableCell key={'actions'} sx={{ textAlign: 'center' }}>
+                    <Link to={`/devices/${row._id}/edit`} className="button-link">
+                      <Button size="small" variant="outlined" startIcon={<EditIcon />}>
+                        Edit
+                      </Button>
+                    </Link>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
