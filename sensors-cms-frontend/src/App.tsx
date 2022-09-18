@@ -34,6 +34,7 @@ function App() {
         }}
       >
         <Toolbar />
+
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="bikes" element={<Bikes />} />

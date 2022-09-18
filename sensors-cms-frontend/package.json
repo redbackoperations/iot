@@ -19,6 +19,7 @@
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
+    "precompiled-mqtt": "^4.3.14-beta",
     "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

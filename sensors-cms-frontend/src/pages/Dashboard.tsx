@@ -5,6 +5,7 @@ import DirectionsBike from '@mui/icons-material/DirectionsBike'
 import DevicesIcon from '@mui/icons-material/Devices'
 import DataObjectIcon from '@mui/icons-material/DataObject'
 import { lightBlue, teal, orange, cyan } from '@mui/material/colors'
+import moment from 'moment'
 import LineChart from '../components/DeviceData/LineChart'
 import PieChart from '../components/DeviceData/PieChart'
 import RecentList from '../components/DeviceData/RecentList'
@@ -14,9 +15,13 @@ import DeviceData from '../interfaces/device-data'
 import axiosClient from '../lib/axiosClient'
 import { generateChartData, groupChartData } from '../lib/dataHelper'
 import { DeviceType } from '../interfaces/device'
+import mqttClient from '../lib/mqttClient'
+import { isJson } from '../lib/jsonHelper'
 
 function Dashboard() {
   const [axiosError, setAxiosError] = useState<string | null>(null)
+  const [mqttMessage, setMqttMessage] = useState<string | null>(null)
+  const [showMqttMessage, setShowMqttMessage] = useState(false)
   const [deviceData, setDeviceData] = useState<DeviceData[]>([])
   const [totalCountData, setTotalCountData] = useState<TotalCount | null>(null)
   const [deviceDataCountData, setDeviceDataCountData] = useState<DeviceDataCount | null>(null)
@@ -24,7 +29,11 @@ function Dashboard() {
   const [totalCountloading, setTotalCountLoading] = useState<boolean>(true)
   const [deviceDataCountloading, setDeviceDataCountloading] = useState<boolean>(true)
 
-  useEffect(() => {
+  const fetchData = () => {
+    setDeviceDataLoading(true)
+    setTotalCountLoading(true)
+    setDeviceDataCountloading(true)
+
     axiosClient
       .get('/data-analytics/total-count')
       .then((response: any) => {
@@ -63,6 +72,45 @@ function Dashboard() {
         console.error(message)
         setAxiosError(message)
       })
+  }
+
+  useEffect(() => {
+    fetchData()
+
+    console.log('connecting to MQTT ...')
+    const client = mqttClient()
+
+    client.on('connect', () => {
+      console.log('Connected to the MQTT broker!')
+    })
+
+    client.on('error', (error) => {
+      console.log(error)
+    })
+
+    client.on('message', (topic, message) => {
+      const msg = message.toString()
+      console.log(`[${topic}] Received message:`, msg)
+
+      const jsonData = isJson(msg)
+      if (jsonData && jsonData.reportedAt) {
+        // a valid data, force the page to refresh
+        fetchData()
+        setShowMqttMessage(true)
+        setMqttMessage(
+          `A new sensor data is reported to MQTT at "${moment
+            .utc(jsonData.reportedAt)
+            .format('DD/MM/YYYY hh:mm.SSS A')}", reteching data now...`
+        )
+      }
+    })
+
+    client.subscribe(process.env.REACT_APP_MQTT_TOPIC_TO_REFRESH_WEB_PAGE as string)
+
+    return () => {
+      console.log('leaving dashboard page, disconnecting from MQTT ...')
+      client.end()
+    }
   }, [])
 
   const groupedData = groupChartData(generateChartData(deviceData))
@@ -149,6 +197,14 @@ function Dashboard() {
         </Grid>
       </Grid>
       {axiosError && <AlertPopup message={axiosError} />}
+      {mqttMessage && (
+        <AlertPopup
+          message={mqttMessage}
+          showAlert={showMqttMessage}
+          setShowAlert={setShowMqttMessage}
+          severity="info"
+        />
+      )}
     </>
   )
 }
