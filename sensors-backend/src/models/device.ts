@@ -1,6 +1,7 @@
-import { ObjectId } from 'mongodb'
 import { model, Schema } from 'mongoose'
 import uniqueValidator from 'mongoose-unique-validator'
+import idValidator from 'mongoose-id-validator'
+import './bike'
 
 enum DeviceType {
   speed = 'speed',
@@ -10,6 +11,16 @@ enum DeviceType {
   resistance = 'resistance',
   incline = 'incline',
   headWind = 'head-wind',
+}
+
+enum DeviceTypeUnitNames {
+  speed = 'm/s',
+  cadence = 'RPM',
+  power = 'W',
+  heartRate = 'BPM',
+  resistance = 'percentage',
+  incline = 'degree',
+  headWind = 'percentage',
 }
 
 // define Bluetooth Service and Characteristic types here
@@ -24,7 +35,8 @@ interface IService extends ICharacteristic {
 
 // this is a bike device model, a device could be a speed/candence/heart rate/power sensor, kickr trainer, kickr climb or headwind
 interface IDevice {
-  bikeId: ObjectId
+  _id: Schema.Types.ObjectId
+  bikeId: Schema.Types.ObjectId
   name: string
   label: string
   description: string
@@ -52,11 +64,11 @@ const serviceSchema = new Schema<IService>({
 
 const deviceSchema = new Schema<IDevice>(
   {
-    bikeId: { type: ObjectId },
+    bikeId: { type: Schema.Types.ObjectId, ref: 'Bike', required: false },
     name: { type: String, required: true, unique: true },
     label: { type: String },
     description: { type: String },
-    deviceType: { type: String, enum: DeviceType, required: true },
+    deviceType: { type: String, enum: DeviceType, required: true, index: true },
     unitName: { type: String, required: true },
     mqttTopicDeviceName: { type: String, required: true },
     bluetoothName: { type: String },
@@ -69,8 +81,9 @@ const deviceSchema = new Schema<IDevice>(
   },
   { timestamps: true }
 )
+deviceSchema.plugin(idValidator)
 deviceSchema.plugin(uniqueValidator)
 
 const deviceModel = model<IDevice>('Device', deviceSchema)
 
-export { deviceModel, ICharacteristic, IService, IDevice, DeviceType }
+export { deviceModel, ICharacteristic, IService, IDevice, DeviceType, DeviceTypeUnitNames }

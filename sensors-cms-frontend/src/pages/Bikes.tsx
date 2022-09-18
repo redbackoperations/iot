@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button'
 import { teal } from '@mui/material/colors'
 import { styled } from '@mui/material/styles'
-import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -14,9 +13,11 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import axiosClient from '../lib/axiosClient'
 import { jsonFields } from '../lib/jsonHelper'
 import AlertPopup from '../components/AlertPopup'
+import TableLoadingSkeletons from '../components/TableLoadingSkeletons'
 import IBike from '../interfaces/bike'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -59,20 +60,18 @@ function Bikes() {
       })
   }, [])
 
-  if (loading) {
-    return <CircularProgress />
-  }
-
   return (
     <>
-      <Box mb={1} display="flex" justifyContent="flex-start" alignItems="flex-start">
+      <Box mb={1} display="flex" justifyContent="flex-end" alignItems="flex-end">
         <Link to="/bikes/new" className="button-link">
           <Button variant="contained" sx={{ background: teal['A700'] }}>
             Create
           </Button>
         </Link>
       </Box>
-      {bikeData && bikeData.length > 0 ? (
+      {loading ? (
+        <TableLoadingSkeletons />
+      ) : bikeData && bikeData.length > 0 ? (
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 500 }} aria-label="bikes-table">
             <TableHead>
@@ -111,15 +110,16 @@ function Bikes() {
         </TableContainer>
       ) : (
         <Typography
-          variant="h6"
           noWrap
           component="div"
-          mt={50}
+          mt={40}
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          No bikes data yet!
+          <Alert severity="warning" variant="filled" sx={{ fontSize: 20 }}>
+            Bikes data not found!
+          </Alert>
         </Typography>
       )}
       {axiosError && <AlertPopup message={axiosError} />}

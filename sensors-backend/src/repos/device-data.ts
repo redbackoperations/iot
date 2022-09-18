@@ -3,9 +3,14 @@ import { deviceDataModel, IDeviceData } from '../models/device-data'
 import { GET_DATA_MAX_LIMIT } from '../lib/constants'
 
 interface DeviceDataFilter {
-  deviceType?: DeviceType
+  deviceType?: DeviceType[] | DeviceType
   bikeName?: string
   reportedAt?: { $lte?: Date; $gte?: Date }
+  $or?: object[]
+  metadata?: object
+  value?: { $lte: number; $gte: number }
+  bikeId?: string
+  ['metadata.testing']?: boolean
 }
 
 /**
@@ -41,16 +46,24 @@ const getOne = async ({
  * Get multiple deviceData records
  */
 const getMany = async ({
-  deviceType,
-  bikeName,
-  after,
+  keyword,
+  testing,
+  deviceTypes,
+  valueRange,
   before,
+  after,
+  bikeName,
+  bikeId,
   limit,
 }: {
-  deviceType?: DeviceType
-  bikeName?: string
+  keyword?: string
+  testing?: boolean
+  deviceTypes?: DeviceType[]
+  valueRange?: [number, number]
   before?: Date
   after?: Date
+  bikeName?: string
+  bikeId?: string
   limit: number
 }): Promise<IDeviceData[] | null> => {
   // TODO: Add validation rules and pagination here
@@ -60,11 +73,36 @@ const getMany = async ({
 
   // return only the records after a specific time if the 'after' or 'before' param is given
   let filter: DeviceDataFilter = {}
-  if (deviceType) filter = { ...filter, deviceType }
-  if (bikeName) filter = { ...filter, bikeName }
-
   if (before) filter = { ...filter, reportedAt: { $lte: before } }
   if (after) filter = { ...filter, reportedAt: { ...filter.reportedAt, $gte: after } }
+
+  // fuzzy search
+  if (keyword) {
+    filter = {
+      ...filter,
+      $or: [
+        { deviceName: new RegExp(keyword, 'gi') },
+        { bikeName: new RegExp(keyword, 'gi') },
+        { unitName: new RegExp(keyword, 'gi') },
+      ],
+    }
+  }
+
+  if (testing) {
+    filter = {
+      ...filter,
+      ['metadata.testing']: testing,
+    }
+  }
+
+  if (deviceTypes) filter = { ...filter, deviceType: deviceTypes }
+
+  if (valueRange) {
+    filter = { ...filter, value: { $gte: valueRange[0], $lte: valueRange[1] } }
+  }
+
+  if (bikeName) filter = { ...filter, bikeName }
+  if (bikeId) filter = { ...filter, bikeId }
 
   // find the latest one record for a specific bike
   const deviceData = await deviceDataModel

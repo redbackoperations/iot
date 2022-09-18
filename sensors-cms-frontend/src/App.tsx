@@ -16,12 +16,25 @@ import './App.css'
 
 function App() {
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
       <TopBar />
       <SideBar />
-      <Box component="main" sx={{ p: 3, width: 1 }}>
+
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+          flexGrow: 1,
+          height: '100vh',
+          overflow: 'auto',
+          p: 3,
+          width: 1,
+        }}
+      >
         <Toolbar />
+
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="bikes" element={<Bikes />} />

@@ -106,48 +106,98 @@ Response:
 }
 ```
 
-GET /api/device-data/many?before=2023-01-01T12:41:22.500Z&after=2022-01-01T12:41:22.500Z&bikeName=00001&deviceType=speed&limit=2
+GET /api/device-data/many?limit=5&before=2022-09-18T04:48:49.656Z&deviceTypes[]=incline&deviceTypes[]=power&valueRange[]=50&valueRange[]=120&after=2021-01-19T00:48:49.656Z&keyword=Wahoo&bikeId=632585c4ef34d8b46d451edc
 
 Response:
 
 ```
 {
-    "deviceDatas": [
+    "total": 5,
+    "deviceData": [
         {
-            "_id": "631d9cb804ff8d79793f6f83",
-            "bikeId": "631d96630adc9e17cadd73ba",
-            "deviceId": "631d96630adc9e17cadd73bb",
-            "deviceName": "wahoo cadence sensor #1",
-            "unitName": "RPM",
-            "value": 100.4,
+            "_id": "632586e26ee8f0a42b513c1e",
+            "bikeId": "632585c4ef34d8b46d451edc",
+            "deviceId": "632585cc0e9bb0d67f3ae132",
+            "deviceType": "incline",
+            "deviceName": "Wahoo incline sensor/device repellendus totam veritatis",
+            "unitName": "degree",
+            "value": 107,
             "metadata": {
                 "firmwareVersion": "1.0.1",
-                "staging": true
+                "test": true
             },
-            "reportedAt": "2022-11-12T01:22:06.471Z",
-            "deviceType": "speed",
-            "bikeName": "00001",
-            "createdAt": "2022-09-11T08:30:48.356Z",
-            "updatedAt": "2022-09-11T08:30:48.356Z",
-            "__v": 0
+            "reportedAt": "2022-09-14T09:11:06.961Z",
+            "__v": 0,
+            "createdAt": "2022-09-17T08:35:46.893Z",
+            "updatedAt": "2022-09-17T08:35:46.893Z"
         },
         {
-            "_id": "631d9c9c04ff8d79793f6f7d",
-            "bikeId": "631d96630adc9e17cadd73ba",
-            "deviceId": "631d96630adc9e17cadd73bb",
-            "deviceName": "wahoo cadence sensor #1",
-            "unitName": "RPM",
-            "value": 40,
+            "_id": "63258be3830f74e250707574",
+            "bikeId": "632585c4ef34d8b46d451edc",
+            "deviceId": "632585cc0e9bb0d67f3ae11d",
+            "deviceType": "incline",
+            "deviceName": "Wahoo incline sensor/device unde consequatur est",
+            "unitName": "degree",
+            "value": 117,
             "metadata": {
                 "firmwareVersion": "1.0.1",
-                "staging": true
+                "test": true
             },
-            "reportedAt": "2022-11-11T01:22:06.471Z",
-            "deviceType": "speed",
-            "bikeName": "00001",
-            "createdAt": "2022-09-11T08:30:20.981Z",
-            "updatedAt": "2022-09-11T08:30:20.981Z",
-            "__v": 0
+            "reportedAt": "2022-09-13T23:10:31.892Z",
+            "__v": 0,
+            "createdAt": "2022-09-17T08:57:07.663Z",
+            "updatedAt": "2022-09-17T08:57:07.663Z"
+        },
+        {
+            "_id": "63258be3830f74e25070744f",
+            "bikeId": "632585c4ef34d8b46d451edc",
+            "deviceId": "632585cc0e9bb0d67f3ae141",
+            "deviceType": "incline",
+            "deviceName": "Wahoo incline sensor/device quis at facere",
+            "unitName": "degree",
+            "value": 81,
+            "metadata": {
+                "firmwareVersion": "1.0.1",
+                "test": true
+            },
+            "reportedAt": "2022-09-13T21:17:39.604Z",
+            "__v": 0,
+            "createdAt": "2022-09-17T08:57:07.653Z",
+            "updatedAt": "2022-09-17T08:57:07.653Z"
+        },
+        {
+            "_id": "6325d6da5aaf35bc80a9b135",
+            "bikeId": "632585c4ef34d8b46d451edc",
+            "deviceId": "63258edb04250d78a8ad1684",
+            "deviceType": "power",
+            "deviceName": "Wahoo power sensor/device modi in reiciendis",
+            "unitName": "W",
+            "value": 68,
+            "metadata": {
+                "firmwareVersion": "1.0.1",
+                "test": true
+            },
+            "reportedAt": "2022-09-13T20:22:41.942Z",
+            "__v": 0,
+            "createdAt": "2022-09-17T14:16:58.714Z",
+            "updatedAt": "2022-09-17T14:16:58.714Z"
+        },
+        {
+            "_id": "63258ee3b0bc8ff18fd0e86f",
+            "bikeId": "632585c4ef34d8b46d451edc",
+            "deviceId": "632585cc0e9bb0d67f3ae117",
+            "deviceType": "incline",
+            "deviceName": "Wahoo incline sensor/device qui odit possimus",
+            "unitName": "degree",
+            "value": 79,
+            "metadata": {
+                "firmwareVersion": "1.0.1",
+                "test": true
+            },
+            "reportedAt": "2022-09-13T08:13:33.388Z",
+            "__v": 0,
+            "createdAt": "2022-09-17T09:09:55.619Z",
+            "updatedAt": "2022-09-17T09:09:55.619Z"
         }
     ]
 }
@@ -165,4 +215,10 @@ npm run seed-bikes-data
 
 ```
 npm run seed-devices-data
+```
+
+- To seed sensors data, run the following:
+
+```
+npm run seed-sensors-data
 ```
