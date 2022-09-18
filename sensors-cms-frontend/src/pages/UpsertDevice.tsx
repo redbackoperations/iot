@@ -229,6 +229,7 @@ function UpsertDevice() {
               />
             </div>
             <div>
+              {/* TODO: add json editor here */}
               <TextField
                 id="outlined-multiline-flexible"
                 label="metadata"
@@ -239,6 +240,7 @@ function UpsertDevice() {
                 helperText={errors.metadata ? (errors.metadata.message as string) : ''}
                 InputLabelProps={id ? { shrink: true } : {}}
               />
+              {/* TODO: add json editor here */}
               <TextField
                 id="outlined-required"
                 label="bluetooth uuids"

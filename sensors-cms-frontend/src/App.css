@@ -2,6 +2,25 @@
   text-decoration: none;
 }
 
+#value-slider > span.MuiSlider-markLabel {
+  margin-top: -9px;
+}
+
+p#value-slider-label {
+  margin-bottom: 8px;
+  margin-top: -8px;
+  font-size: 0.7rem;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+label.testing-data-toggle-label {
+  font-size: 0.8rem;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+}
+
 .App {
   text-align: center;
 }

@@ -39,17 +39,42 @@ router.get('/', (req: Request, res: Response) => {
 //  --header 'Authorization: Basic BASIC_AUTH_CREDS_HERE'
 
 router.get('/many', (req: Request, res: Response) => {
-  const { deviceType, bikeName, before, after, limit } = req.query
+  //   sample query params:
+  //   {
+  //     "keyword": "Wahoo",
+  //     "testing": true,
+  //     "deviceTypes": [
+  //         "power",
+  //         "incline"
+  //     ],
+  //     "valueRange": [
+  //         -10,
+  //         800
+  //     ],
+  //     "after": "22/09/2022 04:20 AM",
+  //     "before": "18/09/2022 04:10 AM",
+  //     "limit": 500
+  // }
+  const { keyword, testing, deviceTypes, valueRange, before, after, limit, bikeName, bikeId } =
+    req.query
 
   deviceDataRepo
     .getMany({
-      deviceType: deviceType as DeviceType,
-      bikeName: bikeName as string,
-      before: before ? new Date(before as string) : null,
-      after: after ? new Date(after as string) : null,
+      keyword: keyword && (keyword as string),
+      testing: testing && Boolean(testing),
+      deviceTypes: deviceTypes && (deviceTypes as DeviceType[]),
+      valueRange:
+        valueRange &&
+        ((valueRange as string[]).map((range: string) => Number(range)) as [number, number]),
+      before: before && new Date(before as string),
+      after: after && new Date(after as string),
+      bikeName: bikeName && (bikeName as string),
+      bikeId: bikeId && (bikeId as string),
       limit: Number(limit) || DEFAULT_GET_DATA_LIMIT,
     })
-    .then((deviceDatas: IDeviceData[]) => res.status(OK).json({ deviceDatas }))
+    .then((deviceData: IDeviceData[]) =>
+      res.status(OK).json({ total: deviceData.length, deviceData })
+    )
     .catch((error: Error) => res.status(BAD_REQUEST).json({ error }))
 })
 
