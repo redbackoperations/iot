@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import Link from '@mui/material/Link'
 import DataCountCard from '../components/DataCountCard'
 import DirectionsBike from '@mui/icons-material/DirectionsBike'
 import DevicesIcon from '@mui/icons-material/Devices'
@@ -12,11 +9,10 @@ import LineChart from '../components/DeviceData/LineChart'
 import PieChart from '../components/DeviceData/PieChart'
 import RecentList from '../components/DeviceData/RecentList'
 import AlertPopup from '../components/AlertPopup'
-import { TotalCount, DeviceDataCount, ChartData } from '../interfaces/data-analytics'
+import { TotalCount, DeviceDataCount } from '../interfaces/data-analytics'
 import DeviceData from '../interfaces/device-data'
 import axiosClient from '../lib/axiosClient'
 import { generateChartData, groupChartData } from '../lib/dataHelper'
-import { Dictionary } from 'lodash'
 import { DeviceType } from '../interfaces/device'
 
 function Dashboard() {
@@ -59,7 +55,7 @@ function Dashboard() {
       .get('/device-data/many?limit=200')
       .then((response: any) => {
         setDeviceDataLoading(false)
-        setDeviceData(response.data.deviceDatas)
+        setDeviceData(response.data.deviceData)
       })
       .catch((error) => {
         setDeviceDataLoading(false)

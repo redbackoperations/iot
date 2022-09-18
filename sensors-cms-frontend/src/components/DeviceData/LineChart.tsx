@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 import {
   LineChart,
   Line,
@@ -16,7 +16,6 @@ import { availableChartColors } from '../../lib/dataHelper'
 import { ChartData } from '../../interfaces/data-analytics'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 
 function DeviceDataLineChart({ data, loading }: { data: ChartData[]; loading?: boolean }) {
   if (loading) {

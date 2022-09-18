@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Typography from '@mui/material/Typography'
+import { Link } from 'react-router-dom'
 import Paper from '@mui/material/Paper'
 import { SxProps } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
@@ -7,6 +8,7 @@ import Box from '@mui/material/Box'
 import { lime } from '@mui/material/colors'
 import { toThousands } from '../lib/dataHelper'
 import Skeleton from '@mui/material/Skeleton'
+import { tokebabCase } from '../lib/dataHelper'
 
 function DataCountCard({
   sxProps,
@@ -68,7 +70,9 @@ function DataCountCard({
             {value ? toThousands(value) : 'N/A'}
           </Typography>
           <Typography component="h2" variant="h6" color="primary">
-            {title}
+            <Link className="button-link" to={`/${tokebabCase(title)}`}>
+              {title}
+            </Link>
           </Typography>
           {description && <Typography color="text.secondary">{description}</Typography>}
           {link && <Box sx={{ mt: 2 }}>link</Box>}

@@ -22,7 +22,7 @@ const createOne = (bikeIds: Schema.Types.ObjectId[], devices: IDevice[]) => {
     deviceType: device.deviceType,
     unitName,
     value,
-    metadata: { firmwareVersion: '1.0.1', test: true },
+    metadata: { firmwareVersion: '1.0.1', testing: true },
     // reportedAt: randomDate(new Date(2022, 9, 1), new Date(2022, 9, 3)),
     reportedAt: faker.date.past(0, '2022-09-15T00:00:00.000Z'),
   }

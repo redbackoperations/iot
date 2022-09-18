@@ -1,7 +1,6 @@
 import { sortBy, groupBy } from 'lodash'
 import moment from 'moment'
 import DeviceData from '../interfaces/device-data'
-import { DeviceType } from '../interfaces/device'
 import { ChartData } from '../interfaces/data-analytics'
 
 const toThousands = (value: number) => {
@@ -31,6 +30,12 @@ const generateChartData = (data: DeviceData[]): ChartData[] =>
     reportedAt: moment.utc(deviceData.reportedAt).format('DD/MM/YYYY HH:mm:ss.SSS'),
   }))
 
+const tokebabCase = (value: string) =>
+  value
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase()
+
 const groupChartData = (data: ChartData[]) => groupBy(data, (d) => d.type)
 
-export { toThousands, availableChartColors, generateChartData, groupChartData }
+export { toThousands, availableChartColors, generateChartData, groupChartData, tokebabCase }

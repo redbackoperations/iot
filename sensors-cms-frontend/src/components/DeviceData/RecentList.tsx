@@ -7,10 +7,11 @@ import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Box from '@mui/material/Box'
-import Skeleton from '@mui/material/Skeleton'
+import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
 import { jsonFields, idFields } from '../../lib/jsonHelper'
 import DeviceData from '../../interfaces/device-data'
+import TableLoadingSkeletons from '../TableLoadingSkeletons'
 
 export default function RecentList({ data, loading }: { data: DeviceData[]; loading: boolean }) {
   return (
@@ -20,13 +21,7 @@ export default function RecentList({ data, loading }: { data: DeviceData[]; load
       </Typography>
 
       {loading ? (
-        <>
-          <Skeleton animation="wave" sx={{ height: '50px' }}></Skeleton>
-          <Skeleton animation="wave" sx={{ height: '50px' }}></Skeleton>
-          <Skeleton animation="wave" sx={{ height: '50px' }}></Skeleton>
-          <Skeleton animation="wave" sx={{ height: '50px' }}></Skeleton>
-          <Skeleton animation="wave" sx={{ height: '50px' }}></Skeleton>
-        </>
+        <TableLoadingSkeletons />
       ) : data && data.length > 0 ? (
         <>
           <TableContainer>
@@ -71,15 +66,16 @@ export default function RecentList({ data, loading }: { data: DeviceData[]; load
         </>
       ) : (
         <Typography
-          variant="h6"
           noWrap
           component="div"
-          mt={2}
+          mt={5}
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          No device data yet!
+          <Alert severity="warning" variant="filled" sx={{ fontSize: 20 }}>
+            Device/sensor data not found!
+          </Alert>
         </Typography>
       )}
     </>

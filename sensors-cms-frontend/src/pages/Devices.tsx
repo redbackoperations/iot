@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { styled } from '@mui/material/styles'
 import { teal } from '@mui/material/colors'
-import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Table from '@mui/material/Table'
@@ -14,10 +13,12 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import axiosClient from '../lib/axiosClient'
 import { jsonFields, idFields } from '../lib/jsonHelper'
 import AlertPopup from '../components/AlertPopup'
 import IDevice from '../interfaces/device'
+import TableLoadingSkeletons from '../components/TableLoadingSkeletons'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -59,10 +60,6 @@ function Devices() {
       })
   }, [])
 
-  if (loading) {
-    return <CircularProgress />
-  }
-
   return (
     <>
       <Box mb={1} display="flex" justifyContent="flex-end" alignItems="flex-end">
@@ -72,7 +69,9 @@ function Devices() {
           </Button>
         </Link>
       </Box>
-      {devices && devices.length > 0 ? (
+      {loading ? (
+        <TableLoadingSkeletons />
+      ) : devices && devices.length > 0 ? (
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 500 }} aria-label="devices-table">
             <TableHead>
@@ -117,15 +116,16 @@ function Devices() {
         </TableContainer>
       ) : (
         <Typography
-          variant="h6"
           noWrap
           component="div"
-          mt={50}
+          mt={40}
           display="flex"
           justifyContent="center"
           alignItems="center"
         >
-          No devices data yet!
+          <Alert severity="warning" variant="filled" sx={{ fontSize: 20 }}>
+            Devices data not found!
+          </Alert>
         </Typography>
       )}
       {axiosError && <AlertPopup message={axiosError} />}
