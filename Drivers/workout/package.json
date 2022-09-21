@@ -4,11 +4,13 @@
   "description": "Control the bike resistance and incline during the workout",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Adrian Grigo",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.2",
     "mqtt": "^4.3.7"
   }
 }
