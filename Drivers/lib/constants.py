@@ -3,11 +3,17 @@ BIKE_01_INCLINE_COMMAND = 'bike/000001/incline'
 BIKE_01_RESISTANCE_COMMAND = 'bike/000001/resistance'
 BIKE_01_INCLINE_REPORT = 'bike/000001/incline/report'
 BIKE_01_RESISTANCE_REPORT = 'bike/000001/resistance/report'
+BIKE_01_SPEED_REPORT = 'bike/000001/speed'
+BIKE_01_CADENCE_REPORT = 'bike/000001/cadence'
+BIKE_01_POWER_REPORT = 'bike/000001/power'
 
 BIKE_02_INCLINE_COMMAND = 'bike/000002/incline'
 BIKE_02_RESISTANCE_COMMAND = 'bike/000002/resistance'
 BIKE_02_INCLINE_REPORT = 'bike/000002/incline/report'
 BIKE_02_RESISTANCE_REPORT = 'bike/000002/resistance/report'
+BIKE_02_SPEED_REPORT = 'bike/000002/speed'
+BIKE_02_CADENCE_REPORT = 'bike/000002/cadence'
+BIKE_02_POWER_REPORT = 'bike/000002/power'
 
 ##### Section 2: BLE devices reserved UUIDs #####
 # More BLE specification details can be found at: https://www.bluetooth.com/specifications/specs/fitness-machine-service-1-0 and https://github.com/oesmith/gatt-xml

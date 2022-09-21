@@ -9,7 +9,7 @@ root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.append(root_folder)
 
 from lib.ble_helper import convert_incline_to_op_value, service_or_characteristic_found, service_or_characteristic_found_full_match, decode_int_bytes, covert_negative_value_to_valid_bytes
-from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID
+from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID, INDOOR_BIKE_DATA_UUID
 
 # a sleep time to wait for a characteristic.writevalue() action to be completed
 WRITEVALUE_WAIT_TIME = 0.5 # TODO: If this doesn't work well, it needs to change this short sleep mechainism to a async process mechainism for sending consequetive BLE commands (eg., threading control)
@@ -33,6 +33,9 @@ class WahooDevice(gatt.Device):
         self.inclination = 0
         self.new_resistance = None
         self.new_inclination = None
+
+        # define the Characteristics for Indoor Bike Data (reporting speed, cadence and power)
+        self.indoor_bike_data = None
 
         # CLI parser arguments
         self.args = args
@@ -60,6 +63,9 @@ class WahooDevice(gatt.Device):
             self.resistance_level_range = service_or_characteristic
         elif service_or_characteristic_found(FTMS_CONTROL_POINT_UUID, service_or_characteristic.uuid):
             self.ftms_control_point = service_or_characteristic
+        elif service_or_characteristic_found(INDOOR_BIKE_DATA_UUID, service_or_characteristic.uuid):
+            self.indoor_bike_data = service_or_characteristic
+
 
     def read_resistance_level_range(self):
         if self.resistance_level_range:
@@ -182,7 +188,123 @@ class WahooDevice(gatt.Device):
             if self.new_inclination is not None:
                 self.set_new_inclination_failed()
 
-   # this is the main process that will be run all time after manager.run() is called
+    # process the Indoor Bike Data
+    def process_indoor_bike_data(self, value):
+        flag_instantaneous_speed = not((value[0] & 1) >> 0)
+        flag_average_speed = (value[0] & 2) >> 1
+        flag_instantaneous_cadence = (value[0] & 4) >> 2
+        flag_average_cadence = (value[0] & 8) >> 3
+        flag_total_distance = (value[0] & 16) >> 4
+        flag_resistance_level = (value[0] & 32) >> 5
+        flag_instantaneous_power = (value[0] & 64) >> 6
+        flag_average_power = (value[0] & 128) >> 7
+        flag_expended_energy = (value[1] & 1) >> 0
+        flag_heart_rate = (value[1] & 2) >> 1
+        flag_metabolic_equivalent = (value[1] & 4) >> 2
+        flag_elapsed_time = (value[1] & 8) >> 3
+        flag_remaining_time = (value[1] & 16) >> 4
+        offset = 2
+
+        if flag_instantaneous_speed:
+            self.instantaneous_speed = float((value[offset+1] << 8) + value[offset]) / 100.0 * 5.0 / 18.0
+            offset += 2
+            print(f"Instantaneous Speed: {self.instantaneous_speed} m/s")
+
+        if flag_average_speed:
+            self.average_speed = float((value[offset+1] << 8) + value[offset]) / 100.0 * 5.0 / 18.0
+            offset += 2
+            print(f"Average Speed: {self.average_speed} m/s")
+
+        if flag_instantaneous_cadence:
+            self.instantaneous_cadence = float((value[offset+1] << 8) + value[offset]) / 10.0
+            offset += 2
+            print(f"Instantaneous Cadence: {self.instantaneous_cadence} rpm")
+
+        if flag_average_cadence:
+            self.average_cadence = float((value[offset+1] << 8) + value[offset]) / 10.0
+            offset += 2
+            print(f"Average Cadence: {self.average_cadence} rpm")
+
+        if flag_total_distance:
+            self.total_distance = int((value[offset+2] << 16) + (value[offset+1] << 8) + value[offset])
+            offset += 3
+            print(f"Total Distance: {self.total_distance} m")
+
+        if flag_resistance_level:
+           self.resistance_level = int((value[offset+1] << 8) + value[offset])
+           offset += 2
+           print(f"Resistance Level: {self.resistance_level}")
+
+        if flag_instantaneous_power:
+            self.instantaneous_power = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            print(f"Instantaneous Power: {self.instantaneous_power} W")
+
+        if flag_average_power:
+            self.average_power = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            print(f"Average Power: {self.average_power} W")
+
+        if flag_expended_energy:
+            expended_energy_total = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            if expended_energy_total != 0xFFFF:
+                self.expended_energy_total = expended_energy_total
+                print(f"Expended Energy: {self.expended_energy_total} kCal total")
+
+            expended_energy_per_hour = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            if expended_energy_per_hour != 0xFFFF:
+                self.expended_energy_per_hour = expended_energy_per_hour
+                print(f"Expended Energy: {self.expended_energy_per_hour} kCal/hour")
+
+            expended_energy_per_minute = int(value[offset])
+            offset += 1
+            if expended_energy_per_minute != 0xFF:
+                self.expended_energy_per_minute = expended_energy_per_minute
+                print(f"Expended Energy: {self.expended_energy_per_minute} kCal/min")
+
+        if flag_heart_rate:
+            self.heart_rate = int(value[offset])
+            offset += 1
+            print(f"Heart Rate: {self.heart_rate} bpm")
+
+        if flag_metabolic_equivalent:
+            self.metabolic_equivalent = float(value[offset]) / 10.0
+            offset += 1
+            print(f"Metabolic Equivalent: {self.metabolic_equivalent} METS")
+
+        if flag_elapsed_time:
+            self.elapsed_time = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            print(f"Elapsed Time: {self.elapsed_time} seconds")
+
+        if flag_remaining_time:
+            self.remaining_time = int((value[offset+1] << 8) + value[offset])
+            offset += 2
+            print(f"Remaining Time: {self.remaining_time} seconds")
+
+        if offset != len(value):
+            print("ERROR: Payload was not parsed correctly")
+            return
+
+        # The KICKR Trainer only reports instantaneous speed, cadence and power
+        # Publish them to MQTT topics if they were provided
+        if flag_instantaneous_speed:
+            self.mqtt_client.publish(self.args.speed_report_topic, self.instantaneous_speed)
+        if flag_instantaneous_cadence:
+            self.mqtt_client.publish(self.args.cadence_report_topic, self.instantaneous_cadence)
+        if flag_instantaneous_power:
+            self.mqtt_client.publish(self.args.power_report_topic, self.instantaneous_power)
+
+
+    # this will be called with updates from any characteristics which provide notifications (eg. Indoor Bike Data)
+    def characteristic_value_updated(self, characteristic, value):
+        if characteristic == self.indoor_bike_data:
+            self.process_indoor_bike_data(value)
+
+
+    # this is the main process that will be run all time after manager.run() is called
     def services_resolved(self):
         super().services_resolved()
 
@@ -203,10 +325,13 @@ class WahooDevice(gatt.Device):
                     self.set_service_or_characteristic(characteristic)
 
         # continue if FTMS service is found from the BLE device
-        if self.ftms:
+        if self.ftms and self.indoor_bike_data:
             # read the supported resistance and inclination ranges here to set correct command values later
             self.read_resistance_level_range()
             self.read_inclination_range()
+
+            # enable notifications for Indoor Bike Data
+            self.indoor_bike_data.enable_notifications()
 
             # reset control settings while initiating the BLE connection
             self.ftms_reset_settings()

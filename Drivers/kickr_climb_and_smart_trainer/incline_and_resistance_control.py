@@ -9,7 +9,7 @@ from wahoo_device import WahooDevice
 root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root_folder)
 
-from lib.constants import BIKE_01_INCLINE_COMMAND, BIKE_01_RESISTANCE_COMMAND, BIKE_01_INCLINE_REPORT, BIKE_01_RESISTANCE_REPORT
+from lib.constants import BIKE_01_INCLINE_COMMAND, BIKE_01_RESISTANCE_COMMAND, BIKE_01_INCLINE_REPORT, BIKE_01_RESISTANCE_REPORT, BIKE_01_SPEED_REPORT, BIKE_01_CADENCE_REPORT, BIKE_01_POWER_REPORT
 
 # define CLI parse arguments
 parser = ArgumentParser(description="Wahoo Kickr Incline and Resistance Control")
@@ -26,6 +26,9 @@ parser.add_argument('--incline_command_topic', dest='incline_command_topic', typ
 parser.add_argument('--incline_report_topic', dest='incline_report_topic', type=str, help='a MQTT topic that will receieve the current incline or resistance levels data from this driver', default=BIKE_01_INCLINE_REPORT)
 parser.add_argument('--resistance_command_topic', dest='resistance_command_topic', type=str, help='a MQTT topic that will send incline or resistance control commands to this driver', default=BIKE_01_RESISTANCE_COMMAND)
 parser.add_argument('--resistance_report_topic', dest='resistance_report_topic', type=str, help='a MQTT topic that will receieve the current incline or resistance levels data from this driver', default=BIKE_01_RESISTANCE_REPORT)
+parser.add_argument('--speed_report_topic', dest='speed_report_topic', type=str, help='a MQTT topic that will receive the current instantaneous speed data in m/s from this driver', default=BIKE_01_SPEED_REPORT)
+parser.add_argument('--cadence_report_topic', dest='cadence_report_topic', type=str, help='a MQTT topic that will receive the current instantaneous cadence data in rpm from this driver', default=BIKE_01_CADENCE_REPORT)
+parser.add_argument('--power_report_topic', dest='power_report_topic', type=str, help='a MQTT topic that will receive the current instantaneous power data in W from this driver', default=BIKE_01_POWER_REPORT)
 
 args = parser.parse_args()
 
