@@ -5,25 +5,39 @@ import struct
 from mqtt_client import MQTTClient
 import os
 import time
+import json
 
-# This module was developed for testing purposes and is not required in the final product
-# It sends a single command to the fan taken from the command line.
+# When a message is received from MQTT on the fan topic for this bike, it is received here
+def message(client, userdata, msg):
+	data = json.loads(str(msg.payload.decode("utf-8")))
+	speed = int(data['fan'])
+	if speed < 0 or speed > 100:
+		print(f"Invalid speed in message: {msg}")
+		return
+	print(f"Setting speed to {data['fan']}")
+	device.set_speed(speed)
 
-# Instead, you want to use publish_fan.py and fan.py together which achieve the same result
-# while also being able to be called multiple times to change the fan speed
-# and reporting back the current value (roughly every second)
+# Called when an update is published back to MQTT.
+# Stop the default implementation from printing the message id to the log
+def publish(client, userdata, mid, properties=None):
+	pass
 
 # Subclass gatt.DeviceManager to allow discovery only of HEADWIND devices
 # When the alias begins with the required prefix, connect to the device
 class AnyDeviceManager(gatt.DeviceManager):
-	def device_discovered(self, device):
-		alias = device.alias()
+	def device_discovered(self, dev):
+		alias = dev.alias()
 		if alias is not None and self.prefix is not None and len(alias) >= len(self.prefix) and alias[0:len(self.prefix)] == self.prefix:
-			#print("[%s] Discovered, alias = %s" % (device.mac_address, device.alias()))
-			device = AnyDevice(mac_address=device.mac_address, manager=self)
-			device.speed = self.speed
-			device.state = 0
-			device.connect()
+			#print("[%s] Discovered, alias = %s" % (dev.mac_address, dev.alias()))
+			dev = AnyDevice(mac_address=dev.mac_address, manager=self)
+			dev.enableCount = 0
+			dev.startCount = 0
+			dev.sendCount = 0
+			dev.speed = 0
+			dev.connect()
+			self.stop_discovery()
+			global device
+			device = dev
 
 
 # Send a given value to the fan through Bluetooth
@@ -31,7 +45,6 @@ class AnyDevice(gatt.Device):
 	# When the program exits, stop measurements and discovery services
 	def __del__(self):
 		self.stop_measurements()
-		self.manager.stop_discovery()
 
 	# Called when the connection succeeds
 	def connect_succeeded(self):
@@ -44,17 +57,41 @@ class AnyDevice(gatt.Device):
 	def connect_failed(self, error):
 		super().connect_failed(error)
 		print("[%s] Connection failed: %s" % (self.mac_address, str(error)))
-
+		self.manager.start_discovery()
 
 	# Called with disconnection succeeds
 	def disconnect_succeeded(self):
 		super().disconnect_succeeded()
 		#print("[%s] Disconnected" % (self.mac_address))
 
+	# Called externally to set a new fan speed
+	# The speed should be between 0 and 100 inclusive
+	def set_speed(self, new_speed):
+		if new_speed < 0 or new_speed > 100:
+			print(f"Invalid speed {speed}")
+			return
 
+		self.speed = new_speed
+		self.sendCount = 0
+
+		# Enable write permission if not already
+		# or turn the fan on if it is not ready
+		# and then start sending the new speed
+		if self.enableCount < 3:
+			value = bytes([0x20, 0xee, 0xfc])
+			self.enable_characteristic.write_value(value)
+		elif self.startCount < 3:
+			value = bytes([0x04, 0x04])
+			self.fan_characteristic.write_value(value)
+		else:
+			value = bytes([0x02, self.speed])
+			self.fan_characteristic.write_value(value)
+
+
+	# Once the connection succeded, find the appropriate services and set the fan
+	# to be be ready to receive instructions
 	def services_resolved(self):
 		super().services_resolved()
-		print("Services resolved")
 		self.manager.stop_discovery()
 
 		self.enable_service = next(
@@ -77,37 +114,38 @@ class AnyDevice(gatt.Device):
 		self.fan_characteristic.enable_notifications()
 
 		# Enable write permission
-		value = bytes([0x20, 0xee, 0xfc])
-		self.enable_characteristic.write_value(value)
-		print(f"Enable write permission {self.state}")
+		if self.enableCount < 3:
+			value = bytes([0x20, 0xee, 0xfc])
+			self.enable_characteristic.write_value(value)
 
 	def stop_measurements(self):
 		self.enable_characteristic.enable_notifications(False)
 		self.fan_characteristic.enable_notifications(False)
 
+	# Something was successfully written to the sensor, continue
+	# with the next command in the sequence. Each command should be
+	# sent 3 times to increase the likelihood it is received
 	def characteristic_write_value_succeeded(self, characteristic):
 		if characteristic == self.enable_characteristic:
-			print(f"Communication enabled")
-			if self.state < 3:
-				print(f"Enable write permission {self.state}")
+			if self.enableCount < 3:
 				value = bytes([0x20, 0xee, 0xfc])
 				self.enable_characteristic.write_value(value)
-			else:
-				print(f"Turn on {self.state}")
+				self.enableCount+=1
+			elif self.startCount < 3:
 				value = bytes([0x04, 0x04])
 				self.fan_characteristic.write_value(value)
-			self.state = self.state + 1
+				self.startCount+=1
 		if characteristic == self.fan_characteristic:
-			if self.state < 6:
-				print(f"Turn on {self.state}")
+			if self.startCount < 3:
 				value = bytes([0x04, 0x04])
 				self.fan_characteristic.write_value(value)
-				self.state = self.state + 1
-			elif self.state < 9:
+				self.startCount+=1
+			elif self.sendCount < 3:
 				value = bytes([0x02, self.speed])
 				self.fan_characteristic.write_value(value)
-				print(f"Speed set to {self.speed}")
-				self.state = self.state + 1
+				self.sendCount = self.sendCount + 1
+				if self.sendCount == 3:
+					print(f"Speed set to {self.speed}")
 
 
 	def characteristic_write_value_failed(self, error):
@@ -121,23 +159,22 @@ class AnyDevice(gatt.Device):
 
 	def characteristic_value_updated(self, characteristic, value):
 		if characteristic == self.enable_characteristic:
+			# This remains for debugging, but never seems to be called
+			# Instead Notifications enabled is received
 			print(f"Updated Enable: {value}")
 		if characteristic == self.fan_characteristic:
-			print(f"Updated Fan: {value}")
+			# The fan has several payloads to report its speed, but when
+			# idle, it returns fd 01 xx 04, where xx is the speed (0 to 100)
+			if len(value) == 4 and value[0] == 0xFD and value[1] == 0x01 and value[3] == 0x04:
+				reported_speed = value[2]
+				topic = f"/bike/{deviceId}/fan/reported"
+				payload = f"{reported_speed}"
+				mqtt_client.publish(topic, payload)
+				print(f"Published speed: {reported_speed}")
+
 
 def main():
 	try:
-		if len(sys.argv) != 2:
-			print(f"Usage: {sys.argv[0]} speed")
-			print("Where speed is in range 0 to 100")
-			exit(1)
-
-		speed = int(sys.argv[1])
-		if speed < 0 or speed > 100:
-			print(f"Usage: {sys.argv[0]} speed")
-			print("Where speed is in range 0 to 100")
-			exit(1)
-
 		adapter_name=os.getenv('FAN_ADAPTER_NAME')
 		alias_prefix=os.getenv('FAN_ALIAS_PREFIX')
 
@@ -147,14 +184,19 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
+		mqtt_client.subscribe(f"bike/{deviceId}/fan")
+		mqtt_client.get_client().on_message = message
+		mqtt_client.get_client().on_publish = publish
+		mqtt_client.get_client().loop_start()
 
+		global manager
 		manager = AnyDeviceManager(adapter_name=adapter_name)
 		manager.prefix=alias_prefix
-		manager.speed = speed
 		manager.start_discovery()
 		manager.run()
 	except KeyboardInterrupt:
 		pass
+	mqtt_client.get_client().loop_stop()
 
 
 if __name__=="__main__":
