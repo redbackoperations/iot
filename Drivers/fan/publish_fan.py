@@ -24,9 +24,9 @@ def main():
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), \
             os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         mqtt_client.setup_mqtt_client()
-        deviceId = "000001" #os.getenv('DEVICE_ID')
+        deviceId = os.getenv('DEVICE_ID')
         topic = f"bike/{deviceId}/fan"
-        payload = f"{{fan: {speed}}}"
+        payload = f"{{\"fan\": {speed}}}"
         print(f"Publishing {topic} {payload}")
         mqtt_client.publish(topic, payload)
     except KeyboardInterrupt:
