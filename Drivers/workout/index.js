@@ -2,7 +2,7 @@ const mqtt = require('mqtt');
 require('dotenv').config();
 
 const mqtt_credentials = {
-    host: process.env.MQTT_HOST || "localhost",
+    host: process.env.MQTT_HOSTNAME || "localhost",
     port: 8883,
     protocol: "mqtts",
     username: process.env.MQTT_USERNAME || "",
@@ -11,7 +11,7 @@ const mqtt_credentials = {
 
 const client = mqtt.connect(mqtt_credentials);
 
-const deviceId = process.env.DEVICE_ID | "invalid";
+const deviceId = process.env.DEVICE_ID || "invalid";
 
 const workoutTopic = '/bike/' + deviceId + '/workout';
 const resistanceTopic = '/bike/' + deviceId + '/resistance';
@@ -35,19 +35,21 @@ function increaseLevel() {
     if (currentResistance > 100)
         currentResistance = 100;
     else
-        client.publish(resistanceTopic, currentResistance);
+        client.publish(resistanceTopic, currentResistance.toString());
 
     currentIncline += 1;
     if (currentIncline > 19)
         currentIncline = 19;
     else
-        client.publish(inclineTopic, currentIncline);
+        client.publish(inclineTopic, currentIncline.toString());
 
     currentLevel += 0.5;
     if (currentLevel > 9)
         currentLevel = 9;
     else if (currentLevel === parseInt(currentLevel))
-        client.publish(levelTopic, currentIncline);
+        client.publish(levelTopic, currentIncline.toString());
+
+    console.log(`Increased Level to ${currentLevel} Resistance ${currentResistance} Incline ${currentIncline}`);
 }
 
 function decreaseLevel() {
@@ -55,19 +57,21 @@ function decreaseLevel() {
     if (currentResistance < 24)
         currentResistance = 24;
     else
-        client.publish(resistanceTopic, currentResistance);
+        client.publish(resistanceTopic, currentResistance.toString());
 
     currentIncline -= 1;
     if (currentIncline < 0)
         currentIncline = 0;
     else
-        client.publish(inclineTopic, currentIncline);
+        client.publish(inclineTopic, currentIncline.toString());
 
     currentLevel -= 0.5;
     if (currentLevel < 1)
         currentLevel = 1;
     else if (currentLevel !== parseInt(currentLevel))
-        client.publish(levelTopic, currentIncline);
+        client.publish(levelTopic, currentIncline.toString());
+
+    console.log(`Decreased level to ${currentLevel} Resistance ${currentResistance} Incline ${currentIncline}`);
 }
 
 // Called at 30 second intervals in the workout.
@@ -77,6 +81,7 @@ function rampedWorkout() {
 }
 
 client.on('message', (topic, message) => {
+    console.log(`Received ${message}`);
     let obj = JSON.parse(message);
 
     try {
@@ -105,21 +110,29 @@ client.on('message', (topic, message) => {
             currentWorkout = obj.type;
             startTime = new Date().getTime();
 
-            console.log("Started " + currentWorkout + " workout at " + startTime);
+            console.log("Started " + currentWorkout + " workout at " + startTime.toString());
 
             currentIncline = 0;
             currentResistance = 24;
             currentLevel = 1;
-            client.publish(resistanceTopic, currentResistance);
-            client.publish(inclineTopic, currentIncline);
-            client.publish(levelTopic, currentLevel);
+            client.publish(resistanceTopic, currentResistance.toString());
+            client.publish(inclineTopic, currentIncline.toString());
+            client.publish(levelTopic, currentLevel.toString());
 
             workoutTimer = setInterval(rampedWorkout, 30000);
             break;
+
         case 'stop':
             console.log("Stopped " + currentWorkout + " workout at " + new Date().getTime());
             clearInterval(workoutTimer);
             currentWorkout = '';
+
+            currentIncline = 0;
+            currentResistance = 24;
+            currentLevel = 1;
+            client.publish(resistanceTopic, currentResistance.toString());
+            client.publish(inclineTopic, currentIncline.toString());
+            client.publish(levelTopic, currentLevel.toString());
             break;
 
         case 'increase':
@@ -138,5 +151,6 @@ client.on('message', (topic, message) => {
 
 client.on('connect', () => {
     console.log('Connected to broker');
+    console.log(`Subscribing to ${workoutTopic}`);
     client.subscribe(workoutTopic);
 });
