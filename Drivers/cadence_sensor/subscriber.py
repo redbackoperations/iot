@@ -10,7 +10,6 @@ mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), \
     os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 mqtt_client.setup_mqtt_client()
 deviceId = os.getenv('DEVICE_ID')
-mqtt_client.subscribe(f"/bike/#")
-mqtt_client.subscribe(f"bike/#")
+mqtt_client.subscribe(f"/bike/{deviceId}/cadence")
 mqtt_client.get_client().on_message = message
 mqtt_client.loop_forever()
