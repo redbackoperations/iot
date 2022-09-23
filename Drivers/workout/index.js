@@ -13,10 +13,10 @@ const client = mqtt.connect(mqtt_credentials);
 
 const deviceId = process.env.DEVICE_ID || "invalid";
 
-const workoutTopic = '/bike/' + deviceId + '/workout';
-const resistanceTopic = '/bike/' + deviceId + '/resistance/control';
-const inclineTopic = '/bike/' + deviceId + '/incline/control';
-const levelTopic = '/bike/' + deviceId + '/level';
+const workoutTopic = 'bike/' + deviceId + '/workout';
+const resistanceTopic = 'bike/' + deviceId + '/resistance/control';
+const inclineTopic = 'bike/' + deviceId + '/incline/control';
+const levelTopic = 'bike/' + deviceId + '/level';
 
 const workout_types = ['ramped', 'strength', 'endurance', 'threshold'];
 const command_types = ['start', 'stop', 'increase', 'decrease'];

@@ -12,7 +12,7 @@ const mqtt_credentials = {
 const client = mqtt.connect(mqtt_credentials);
 
 const deviceId = process.env.DEVICE_ID || "invalid";
-const workoutTopic = '/bike/' + deviceId + '/workout';
+const workoutTopic = 'bike/' + deviceId + '/workout';
 
 const payloadStart = '{"type": "ramped", "command": "start", "duration": -1}';
 const payloadStop = '{"type": "ramped", "command": "stop"}';
