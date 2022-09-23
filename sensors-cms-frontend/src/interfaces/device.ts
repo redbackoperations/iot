@@ -5,7 +5,7 @@ export enum DeviceType {
   heartRate = 'heart-rate',
   resistance = 'resistance',
   incline = 'incline',
-  headWind = 'head-wind',
+  headWind = 'fan',
 }
 
 export interface Characteristic {
