@@ -4,8 +4,9 @@ import sys
 import struct
 from mqtt_client import MQTTClient
 import os
-import time
 import json
+import time
+import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
@@ -167,11 +168,14 @@ class AnyDevice(gatt.Device):
 			# idle, it returns fd 01 xx 04, where xx is the speed (0 to 100)
 			if len(value) == 4 and value[0] == 0xFD and value[1] == 0x01 and value[3] == 0x04:
 				reported_speed = value[2]
-				topic = f"/bike/{deviceId}/fan/reported"
-				payload = f"{reported_speed}"
+				topic = f"bike/{deviceId}/fan"
+				payload = self.mqtt_data_report_payload(reported_speed)
 				mqtt_client.publish(topic, payload)
 				print(f"Published speed: {reported_speed}")
 
+	def mqtt_data_report_payload(value):
+		# TODO: add more json data payload whenever needed later
+		return json.dumps({"value": value, "unitName": 'percentage', "timestamp": time.time(), "metadata": { "deviceName": platform.node() } })
 
 def main():
 	try:

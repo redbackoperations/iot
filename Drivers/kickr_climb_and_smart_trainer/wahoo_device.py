@@ -1,7 +1,12 @@
+from pickle import TRUE
 import re
 import os
+from sqlite3 import Timestamp
 import sys
 import gatt
+import platform
+import json
+import time
 from time import sleep
 from mqtt_custom_client import MQTTClientWithSendingFTMSCommands
 
@@ -9,7 +14,7 @@ root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.append(root_folder)
 
 from lib.ble_helper import convert_incline_to_op_value, service_or_characteristic_found, service_or_characteristic_found_full_match, decode_int_bytes, covert_negative_value_to_valid_bytes
-from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID, INDOOR_BIKE_DATA_UUID
+from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID, INDOOR_BIKE_DATA_UUID, DEVICE_UNIT_NAMES
 
 # a sleep time to wait for a characteristic.writevalue() action to be completed
 WRITEVALUE_WAIT_TIME = 0.5 # TODO: If this doesn't work well, it needs to change this short sleep mechainism to a async process mechainism for sending consequetive BLE commands (eg., threading control)
@@ -112,8 +117,8 @@ class WahooDevice(gatt.Device):
             # reset incline to the flat level: 0%
             self.custom_control_point_set_target_inclination(self.inclination)
 
-            self.mqtt_client.publish(self.args.incline_report_topic, self.inclination)
-            self.mqtt_client.publish(self.args.resistance_report_topic, self.resistance)
+            self.mqtt_client.publish(self.args.incline_report_topic, self.mqtt_data_report_payload('incline', self.inclination))
+            self.mqtt_client.publish(self.args.resistance_report_topic, self.mqtt_data_report_payload('resistance', self.resistance))
 
     # the resistance value is UINT8 type and unitless with a resolution of 0.1
     def ftms_set_target_resistance_level(self, new_resistance):
@@ -144,13 +149,13 @@ class WahooDevice(gatt.Device):
         self.inclination = self.new_inclination
         self.new_inclination = None
         print(f"A new inclination has been set successfully: {self.inclination}")
-        self.mqtt_client.publish(self.args.incline_report_topic, self.inclination)
+        self.mqtt_client.publish(self.args.incline_report_topic, self.mqtt_data_report_payload('incline', self.inclination))
 
     def set_new_resistance(self):
         self.resistance = self.new_resistance
         self.new_resistance = None
         print(f"A new resistance has been set successfully: {self.resistance}")
-        self.mqtt_client.publish(self.args.resistance_report_topic, self.resistance)
+        self.mqtt_client.publish(self.args.resistance_report_topic, self.mqtt_data_report_payload('resistance', self.resistance))
 
     def set_new_inclination_failed(self):
         print(f"The new inclination has not been set successfully: {self.new_inclination}")
@@ -291,12 +296,15 @@ class WahooDevice(gatt.Device):
         # The KICKR Trainer only reports instantaneous speed, cadence and power
         # Publish them to MQTT topics if they were provided
         if flag_instantaneous_speed:
-            self.mqtt_client.publish(self.args.speed_report_topic, self.instantaneous_speed)
+            self.mqtt_client.publish(self.args.speed_report_topic, self.mqtt_data_report_payload('speed', self.instantaneous_speed))
         if flag_instantaneous_cadence:
-            self.mqtt_client.publish(self.args.cadence_report_topic, self.instantaneous_cadence)
+            self.mqtt_client.publish(self.args.cadence_report_topic, self.mqtt_data_report_payload('cadence', self.instantaneous_cadence))
         if flag_instantaneous_power:
-            self.mqtt_client.publish(self.args.power_report_topic, self.instantaneous_power)
+            self.mqtt_client.publish(self.args.power_report_topic, self.mqtt_data_report_payload('power', self.instantaneous_power))
 
+    def mqtt_data_report_payload(device_type, value):
+        # TODO: add more json data payload whenever needed later
+        return json.dumps({"value": value, "unitName": DEVICE_UNIT_NAMES[device_type], "timestamp": time.time(), "metadata": { "deviceName": platform.node() } })
 
     # this will be called with updates from any characteristics which provide notifications (eg. Indoor Bike Data)
     def characteristic_value_updated(self, characteristic, value):

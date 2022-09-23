@@ -101,3 +101,13 @@ INCLINE_MAX = 19 # 19% incline up
 
 MIN_BYTE_VALUE = 0
 MAX_BYTE_VALUE = 256
+
+DEVICE_UNIT_NAMES = {
+  "speed": "m/s",
+  "cadence": "RPM",
+  "power": "W",
+  "heartRate": "BPM",
+  "resistance": "percentage",
+  "incline": "degree",
+  "headWind": "percentage"
+}
