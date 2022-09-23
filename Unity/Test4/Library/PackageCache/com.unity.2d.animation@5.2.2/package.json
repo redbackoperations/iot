@@ -1,0 +1,43 @@
+{
+  "name": "com.unity.2d.animation",
+  "version": "5.2.2",
+  "unity": "2020.3",
+  "unityRelease": "26f1",
+  "displayName": "2D Animation",
+  "description": "2D Animation provides all the necessary tooling and runtime components for skeletal animation using Sprites.",
+  "keywords": [
+    "2d",
+    "animation"
+  ],
+  "category": "2D",
+  "dependencies": {
+    "com.unity.2d.common": "4.2.0",
+    "com.unity.mathematics": "1.1.0",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.modules.animation": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0"
+  },
+  "relatedPackages": {
+    "com.unity.2d.animation.tests": "5.2.2",
+    "com.unity.2d.common.tests": "4.2.0",
+    "com.unity.2d.psdimporter": "4.3.0"
+  },
+  "samples": [
+    {
+      "displayName": "Samples",
+      "description": "Various 2D Animation sample scenes to show different usage of the 2D Animation tooling for various outcomes.",
+      "path": "Samples~/AnimationSamples"
+    }
+  ],
+  "_upm": {
+    "changelog": "### Changed\r\n- Updated Visibility Tab documentation page."
+  },
+  "upmCi": {
+    "footprint": "df2f5d7c522a791cd960f9f22a7be379f06d1b71"
+  },
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
+    "type": "git",
+    "revision": "b9e3f20a0e34576376438554d7b3b2c0f45f1a33"
+  }
+}
