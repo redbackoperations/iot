@@ -3,7 +3,9 @@
 ### This driver is capable of controlling both resistance and inclination for Wahoo Kickr Smart Trainer and Wahoo Kickr Climb devices.
 
 ---
+
 ## Prerequisites
+
 1. This driver is tested in a **Linux OS enviroment** - Raspberry Pi 4 Model B. It doesn't work in MacOS due to some missing packages. Most probably, it won't work for Windows either. So a **Linux OS enviroment** is needed to run this driver.
 
 2. Please follow the [gatt-python](https://github.com/getsenic/gatt-python) module's README to install all of the necessary dependencies.
@@ -17,16 +19,19 @@
 6. A BLE fitness hardware device with Fitness Machine Service (FTMS) support is also needed to test this driver. Alternatively, you can create a virtual BLE device using a BLE development tool, such as [LightBlue App](https://apps.apple.com/us/app/lightblue/id557428110).
 
 ## Usage
+
 1. Ensure the fitness hardware device has been turned on and waiting for BLE pairing.
 
 2. In a Linux terminal, run either `sudo gattctl --discover` or `./Drivers/lib/ble_devices_scan.py` (under the `iot` Git repo) to scan BLE devices, and find out the exact MAC address for the fitness hardware device you're going to interact with.
 
 3. Under the `iot` Git repo, run the following command with proper BLE and MQTT connection arguments to initiate the driver for incline and resistance control:
+
 ```
-./Drivers/kickr_climb_and_smart_trainer/incline_and_resistance_control.py --mac_address "THE_WAHOO_KICKR_PRODUCT_BLUETOOTH_MAC_ADDRESS"  --broker_address="HIVEMQ_CLOUD_MQTT_BROKER_ADDRESS_HERE" --username="HIVEMQ_CLOUD_USERNAME_HERE" --password="HIVEMQ_CLOUD_PASSWORD_HERE" --resistance_command_topic=bike/000001/resistance --incline_command_topic=bike/000001/incline --resistance_report_topic=bike/000001/resistance/report --incline_report_topic=bike/000001/incline/report
+./Drivers/kickr_climb_and_smart_trainer/incline_and_resistance_control.py --mac_address "THE_WAHOO_KICKR_PRODUCT_BLUETOOTH_MAC_ADDRESS"  --broker_address="HIVEMQ_CLOUD_MQTT_BROKER_ADDRESS_HERE" --username="HIVEMQ_CLOUD_USERNAME_HERE" --password="HIVEMQ_CLOUD_PASSWORD_HERE" --resistance_command_topic=bike/000001/resistance/control --incline_command_topic=bike/000001/incline/control --resistance_report_topic=bike/000001/resistance --incline_report_topic=bike/000001/incline
 ```
 
 4. If the BLE and MQTT connections are built correctly, you should now see some logs as the following:
+
 ```
 Connecting to the BLE device...
 [2b:80:03:12:bf:dd] Resolved services
@@ -42,6 +47,7 @@ Subscribed: 1 [<paho.mqtt.reasoncodes.ReasonCodes object at 0xb4fece50>, <paho.m
 6. You can now publish a MQTT message to the corresponding command topic (e.g., `bike/000001/resistance` or `bike/000001/incline`) with a `text/plain` payload like: `-10` for incline or `100` for resistance.
 
 7. From the terminal log, you will see a MQTT command message has been received and it's sent to the BLE FTMS control point for assigning the new value:
+
 ```
 ...
 [MQTT message received for Topic: 'bike/000001/incline', QOS: 0]  -10
@@ -58,7 +64,8 @@ A new inclination has been set successfully: -10
 
 ## Helpful Resources
 
-The official Bluetooth specification docs relating to BLE Fitness devices can be found in the followings: 
+The official Bluetooth specification docs relating to BLE Fitness devices can be found in the followings:
+
 - https://www.thisisant.com/assets/resources/Datasheets/D00001699_-_GFIT_User_Guide_and_Specification_Document_v2.0.pdf
 - https://www.bluetooth.com/specifications/specs/fitness-machine-service-1-0/
 - https://www.bluetooth.com/specifications/specs/gatt-specification-supplement-6/

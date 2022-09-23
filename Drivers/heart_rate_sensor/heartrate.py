@@ -3,6 +3,8 @@ import gatt
 from mqtt_client import MQTTClient
 import os
 import time
+import platform
+import json
 
 # Subclass gatt.DeviceManager to allow discovery only of TICKR devices
 # When the alias begins with the required prefix, connect to the device
@@ -13,7 +15,6 @@ class AnyDeviceManager(gatt.DeviceManager):
             #print("[%s] Discovered, alias = %s" % (device.mac_address, device.alias()))
             device = AnyDevice(mac_address=device.mac_address, manager=self)
             device.connect()
-
 
 # Subclass gatt.Device to implement the Heart Rate Protocol
 class AnyDevice(gatt.Device):
@@ -161,10 +162,13 @@ class AnyDevice(gatt.Device):
     # Publish the heart rate to MQTT
     def publish(self, ts, heartrate):
         topic = f"bike/{deviceId}/heartrate"
-        payload = f"{{timestamp: {ts}, heartrate: {heartrate}}}"
+        payload = self.mqtt_data_report_payload(heartrate, ts)
         print(f"Publishing {topic} {payload}")
         mqtt_client.publish(topic, payload)
 
+    def mqtt_data_report_payload(value, timestamp):
+        # TODO: add more json data payload whenever needed later
+        return json.dumps({"value": value, "unitName": 'BPM', "timestamp": timestamp, "metadata": { "deviceName": platform.node() } })        
 
 def main():
     try:
