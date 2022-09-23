@@ -99,24 +99,25 @@ function Dashboard() {
       const jsonData = isJson(msg)
       dataRefreshCounter += 1
 
-      if (
-        dataRefreshCounter >= dataRefreshRate &&
-        jsonData &&
-        (jsonData.timestamp || jsonData.reportedAt) &&
-        jsonData.hasOwnProperty('value')
-      ) {
+      if (dataRefreshCounter >= dataRefreshRate) {
         dataRefreshCounter = 0
-        // a valid data, force the page to refresh
-        fetchData()
-        setShowMqttMessage(true)
-        setMqttMessage(
-          `A new sensor data is reported to MQTT at "${moment
-            .utc(jsonData.reportedAt)
-            .format('DD/MM/YYYY hh:mm.SSS A')}", reteching data now...`
-        )
-      }
 
-      // only re-fetching data when the payload including expected json format
+        // only re-fetching data when the payload including expected json format
+        if (
+          jsonData &&
+          (jsonData.timestamp || jsonData.reportedAt) &&
+          jsonData.hasOwnProperty('value')
+        ) {
+          // a valid data, force the page to refresh
+          fetchData()
+          setShowMqttMessage(true)
+          setMqttMessage(
+            `A new sensor data is reported to MQTT at "${moment
+              .utc(jsonData.reportedAt)
+              .format('DD/MM/YYYY hh:mm.SSS A')}", reteching data now...`
+          )
+        }
+      }
     })
 
     client.subscribe(process.env.REACT_APP_MQTT_TOPIC_TO_REFRESH_WEB_PAGE as string)
