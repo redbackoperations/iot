@@ -18,6 +18,10 @@ import { DeviceType } from '../interfaces/device'
 import mqttClient from '../lib/mqttClient'
 import { isJson } from '../lib/jsonHelper'
 
+// a counter to limit the refresh rate
+let dataRefreshCounter = 0
+const dataRefreshRate = process.env.REACT_APP_FETCH_DATA_RATE || 30
+
 function Dashboard() {
   const [axiosError, setAxiosError] = useState<string | null>(null)
   const [mqttMessage, setMqttMessage] = useState<string | null>(null)
@@ -93,7 +97,15 @@ function Dashboard() {
       console.log(`[${topic}] Received message:`, msg)
 
       const jsonData = isJson(msg)
-      if (jsonData && jsonData.reportedAt) {
+      dataRefreshCounter += 1
+
+      if (
+        dataRefreshCounter >= dataRefreshRate &&
+        jsonData &&
+        (jsonData.timestamp || jsonData.reportedAt) &&
+        jsonData.hasOwnProperty('value')
+      ) {
+        dataRefreshCounter = 0
         // a valid data, force the page to refresh
         fetchData()
         setShowMqttMessage(true)
@@ -103,6 +115,8 @@ function Dashboard() {
             .format('DD/MM/YYYY hh:mm.SSS A')}", reteching data now...`
         )
       }
+
+      // only re-fetching data when the payload including expected json format
     })
 
     client.subscribe(process.env.REACT_APP_MQTT_TOPIC_TO_REFRESH_WEB_PAGE as string)

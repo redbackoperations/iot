@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import moment from 'moment'
 import { deviceDataModel, IMQTTDeviceData } from '../../models/device-data'
 import mqttClient from '../../lib/mqttClient'
 import { DEVICE_DATA_TOPICS } from '../../lib/constants'
@@ -37,8 +38,14 @@ mqttClient.on('message', (topic, message) => {
       deviceData.value = Number(payload.value)
       // manually assign device type
       deviceData.deviceType = deviceType as DeviceType
-      // mannually assign bike name if not provided
+      // manually assign bike name if not provided
       if (!payload.bikeName) deviceData.bikeName = findBikeNumber(topic)
+      // assign reportedAt if it's passed from the message payload
+      if (!payload.timestamp || !payload.reportedAt) {
+        deviceData.reportedAt = moment
+          .unix((payload.timestamp || payload.reportedAt) as unknown as number)
+          .toDate()
+      }
 
       deviceData.save((err, doc) => {
         if (err) return console.error(`[${topic}] Failed to save a device data`, err)
