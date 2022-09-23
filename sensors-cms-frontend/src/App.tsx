@@ -34,6 +34,7 @@ function App() {
         }}
       >
         <Toolbar />
+        <Toolbar sx={{ display: { xs: 'block', sm: 'none' } }} />
 
         <Routes>
           <Route path="/" element={<Dashboard />} />

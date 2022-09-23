@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express'
+import morgan from 'morgan'
 import * as dotenv from 'dotenv'
 import basicAuth from 'express-basic-auth'
 import cors from 'cors'
@@ -13,11 +14,12 @@ const port = process.env.API_PORT || 3000 // default port to listen
 
 const app = express()
 
+// add server logger
+app.use(morgan('combined'))
+
 // Common middlewares
 app.use(express.json())
 app.use(cors())
-
-// TODO: add server logger later
 
 // define a route handler for the default home page
 app.get('/', (req, res) => {
