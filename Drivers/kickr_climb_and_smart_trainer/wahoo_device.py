@@ -302,7 +302,7 @@ class WahooDevice(gatt.Device):
         if flag_instantaneous_power:
             self.mqtt_client.publish(self.args.power_report_topic, self.mqtt_data_report_payload('power', self.instantaneous_power))
 
-    def mqtt_data_report_payload(device_type, value):
+    def mqtt_data_report_payload(self, device_type, value):
         # TODO: add more json data payload whenever needed later
         return json.dumps({"value": value, "unitName": DEVICE_UNIT_NAMES[device_type], "timestamp": time.time(), "metadata": { "deviceName": platform.node() } })
 

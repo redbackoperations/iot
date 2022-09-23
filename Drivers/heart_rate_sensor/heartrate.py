@@ -166,7 +166,7 @@ class AnyDevice(gatt.Device):
         print(f"Publishing {topic} {payload}")
         mqtt_client.publish(topic, payload)
 
-    def mqtt_data_report_payload(value, timestamp):
+    def mqtt_data_report_payload(self, value, timestamp):
         # TODO: add more json data payload whenever needed later
         return json.dumps({"value": value, "unitName": 'BPM', "timestamp": timestamp, "metadata": { "deviceName": platform.node() } })        
 

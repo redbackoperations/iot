@@ -173,7 +173,7 @@ class AnyDevice(gatt.Device):
 				mqtt_client.publish(topic, payload)
 				print(f"Published speed: {reported_speed}")
 
-	def mqtt_data_report_payload(value):
+	def mqtt_data_report_payload(self, value):
 		# TODO: add more json data payload whenever needed later
 		return json.dumps({"value": value, "unitName": 'percentage', "timestamp": time.time(), "metadata": { "deviceName": platform.node() } })
 
