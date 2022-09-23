@@ -47,7 +47,7 @@ function increaseLevel() {
     if (currentLevel > 9)
         currentLevel = 9;
     else if (currentLevel === parseInt(currentLevel))
-        client.publish(levelTopic, currentIncline.toString());
+        client.publish(levelTopic, `{"value": ${currentLevel.toString()}}`);
 
     console.log(`Increased Level to ${currentLevel} Resistance ${currentResistance} Incline ${currentIncline}`);
 }
@@ -69,7 +69,7 @@ function decreaseLevel() {
     if (currentLevel < 1)
         currentLevel = 1;
     else if (currentLevel !== parseInt(currentLevel))
-        client.publish(levelTopic, currentIncline.toString());
+        client.publish(levelTopic, `{"value": ${currentLevel.toString()}}`);
 
     console.log(`Decreased level to ${currentLevel} Resistance ${currentResistance} Incline ${currentIncline}`);
 }
@@ -117,7 +117,7 @@ client.on('message', (topic, message) => {
             currentLevel = 1;
             client.publish(resistanceTopic, currentResistance.toString());
             client.publish(inclineTopic, currentIncline.toString());
-            client.publish(levelTopic, currentLevel.toString());
+            client.publish(levelTopic, `{"value": ${currentLevel.toString()}}`);
 
             workoutTimer = setInterval(rampedWorkout, 30000);
             break;
@@ -132,7 +132,7 @@ client.on('message', (topic, message) => {
             currentLevel = 1;
             client.publish(resistanceTopic, currentResistance.toString());
             client.publish(inclineTopic, currentIncline.toString());
-            client.publish(levelTopic, currentLevel.toString());
+            client.publish(levelTopic, `{"value": ${currentLevel.toString()}}`);
             break;
 
         case 'increase':

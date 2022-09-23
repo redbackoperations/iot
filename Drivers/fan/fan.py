@@ -10,12 +10,11 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	data = json.loads(str(msg.payload.decode("utf-8")))
-	speed = int(data['fan'])
+	speed = int(str(msg.payload.decode("utf-8")))
 	if speed < 0 or speed > 100:
 		print(f"Invalid speed in message: {msg}")
 		return
-	print(f"Setting speed to {data['fan']}")
+	print(f"Setting speed to {speed}")
 	device.set_speed(speed)
 
 # Called when an update is published back to MQTT.
@@ -188,7 +187,7 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
-		mqtt_client.subscribe(f"bike/{deviceId}/fan")
+		mqtt_client.subscribe(f"bike/{deviceId}/fan/control")
 		mqtt_client.get_client().on_message = message
 		mqtt_client.get_client().on_publish = publish
 		mqtt_client.get_client().loop_start()
