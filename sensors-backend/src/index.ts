@@ -8,11 +8,14 @@ import apiRouter from './routes/api'
 import './lib/dbConnection'
 import { getUnauthorizedResponse } from './lib/authHelper'
 import { CustomError } from './lib/httpErrors'
+import helmet from 'helmet'
 
 dotenv.config()
 const port = process.env.API_PORT || 3000 // default port to listen
 
 const app = express()
+
+app.use(helmet())
 
 // add server logger
 app.use(morgan('combined'))

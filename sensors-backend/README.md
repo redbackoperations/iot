@@ -27,7 +27,7 @@ npx ts-node ./src/services/sensor-data-processors/MQTTFeed.ts
 
 or
 
-npm run device-data-processor
+npm run iot-data-processor
 ```
 
 5. Manually publish a sensor data MQTT message (with `application/json` content type) via the corresponding MQTT reporting topic you've assigned before. For instance, publish a JSON message via `bike/000001/speed` topic:
