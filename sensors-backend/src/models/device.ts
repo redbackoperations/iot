@@ -10,7 +10,7 @@ enum DeviceType {
   heartRate = 'heart-rate',
   resistance = 'resistance',
   incline = 'incline',
-  headWind = 'head-wind',
+  headWind = 'fan',
 }
 
 enum DeviceTypeUnitNames {

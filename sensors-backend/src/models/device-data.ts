@@ -17,6 +17,7 @@ interface IMQTTDeviceData {
   value: number
   metadata?: object
   reportedAt?: Date
+  timestamp?: Date
 }
 
 // this is a device data model, a typical device data record could be a record of speed/candence/heart rate/power, resistance, incline or windspeed

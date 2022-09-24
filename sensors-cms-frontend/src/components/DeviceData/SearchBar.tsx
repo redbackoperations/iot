@@ -55,7 +55,7 @@ const limitValues = [
 
 const defaultFormData: Record<string, any> = {
   after: null,
-  before: '2022-09-18T07:20:22.352Z',
+  before: moment.utc(),
   deviceTypes: [],
   keyword: null,
   limit: '100',
@@ -149,7 +149,7 @@ const sliderMarks = [
   },
 ]
 
-const minDistance = 30
+const minDistance = 10
 
 function ValueRangeSlider({
   control,

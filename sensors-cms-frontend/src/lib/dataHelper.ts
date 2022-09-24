@@ -9,7 +9,7 @@ const toThousands = (value: number) => {
 
 const availableChartColors = [
   '#8dd3c7',
-  // '#ffffb3',
+  'rgb(255, 128, 66)',
   '#bebada',
   '#fb8072',
   '#80b1d3',
@@ -19,7 +19,8 @@ const availableChartColors = [
   '#d9d9d9',
   '#bc80bd',
   '#ccebc5',
-  // '#ffed6f',
+  'rgb(255, 187, 40)',
+  'rgb(0, 196, 159)',
 ]
 
 const generateChartData = (data: DeviceData[]): ChartData[] =>

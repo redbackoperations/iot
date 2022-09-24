@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 import { grey } from '@mui/material/colors'
 import CircularProgress from '@mui/material/CircularProgress'
+import Paper from '@mui/material/Paper'
 import { DeviceDataCount } from '../../interfaces/data-analytics'
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
@@ -54,26 +55,39 @@ function DeviceDataPieChart({
   return loading ? (
     <CircularProgress style={{ width: '300px', height: '300px' }} color="info" />
   ) : (
-    <ResponsiveContainer width="100%" height={360}>
-      <PieChart>
-        <Pie
-          data={chartData}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={renderCustomizedLabel}
-          outerRadius={150}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {chartData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <Paper
+      sx={{
+        p: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        borderRadius: 2,
+        justifyContent: 'center',
+        boxShadow:
+          '0px 0 0 -1px rgb(0 0 0 / 5%), 0px 1px 1px 0px rgb(0 0 0 / 5%), 0px 1px 1px 0px rgb(0 0 0 / 10%)',
+      }}
+    >
+      <ResponsiveContainer width="100%" height={360}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            outerRadius={150}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </Paper>
   )
 }
 

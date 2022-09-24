@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow'
 import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
 import { jsonFields, idFields } from '../../lib/jsonHelper'
 import DeviceData from '../../interfaces/device-data'
 import TableLoadingSkeletons from '../TableLoadingSkeletons'
@@ -24,7 +25,7 @@ export default function RecentList({ data, loading }: { data: DeviceData[]; load
         <TableLoadingSkeletons />
       ) : data && data.length > 0 ? (
         <>
-          <TableContainer>
+          <TableContainer component={Paper}>
             <Table size="small" sx={{ overflow: 'scroll' }}>
               <TableHead>
                 <TableRow>
