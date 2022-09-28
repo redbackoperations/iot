@@ -1,46 +1,55 @@
-# Getting Started with Create React App
+# IoT CMS Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a frontend application of IoT CMS that displaying bikes, devices, and sensors DB stored data in a visualised format like line charts, pie charts or table lists. The app is also used to create/update bikes and devices data as a CMS.
 
-## Available Scripts
+The `/dashboard` page is able to fetch the latest sensors data from DB automatically without a page refresh when there're multiple sensors data report messages sent to MQTT broker. The `/device-data` page is able to search for multiple sensors data using different filters.
 
-In the project directory, you can run:
+## Tech Stacks being Used
 
-### `npm start`
+- This app is implemented by the latest **React** library (18.2.0).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Material UI component library (**MUI**) is also used to present better UI and UX.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- All source codes are written by **Typescript** to support for static type checks.
 
-### `npm test`
+- **Docker** is used to containerise this app as an image, which is then pulled and run on a GCP Compute Engine VM instance as a standalone docker container process.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisite
 
-### `npm run build`
+1. Please ensure `Nodejs`(>= v16.0.0) and `npm`(>=7.0.0) have been installed.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Ensure you have a MQTT broker url with credentials ready.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Ensure you have **IoT Backend** server running locally (without this step, this FE app can be still initiated, yet it just won't show up any data as the backend server is not connected).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Ensure port `3001` is available for use locally.
 
-### `npm run eject`
+5. Copy `.env.example` to a new `.env` file, and modify the ENV variables to reflect your MQTT broker and backend server configs if needed.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+6. To build a new version of docker image, you will also need to install `Docker` locally.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## How to Install and Run Locally
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. Run `npm install` to install all needed packages.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+2. Run `npm start` to initiate the front app.
 
-## Learn More
+3. You can now open up a browser and go to `http://localhost:3001/` to visit the app.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## How to Create a New Docker Image and Push to GCP Container Registry
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. You need to refer to the official GCP docker docs to authenticate your GCP account locally with Docker first.
+
+2. Under the root folder directory, run `docker build -t cms-fe .` to create a new docker image build.
+
+3. Assign the new build with a new docker tag version like: `docker tag cms-fe {YOUR_GCP_REGION_URL_HERE}/{YOUR_GCP_PROJECT_ID_HERE}/cms-fe:v0.1`.
+
+4. Push the docker image to GCP with `{YOUR_GCP_REGION_URL_HERE}/{YOUR_GCP_PROJECT_ID_HERE}/cms-fe:v0.1`.
+
+5. Now you can pull the newly pushed docker image on the GCP VM instance, stop the old docker container, and start a new container with this new image build. The production IoT FE app is running the latest version build now.
+
+### Extra Notes
+
+- The CMS FE app is now hosted on a GCP Compute Engine VM instance.
+- The app can now be visited at `http://34.129.248.251` with proper Basic Auth creds.
+- It's fetching sensors data from a backend API server at `http://34.129.248.251:3000`.
