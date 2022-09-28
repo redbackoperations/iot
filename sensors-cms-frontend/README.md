@@ -48,7 +48,7 @@ The `/dashboard` page is able to fetch the latest sensors data from DB automatic
 
 5. Now you can pull the newly pushed docker image on the GCP VM instance, stop the old docker container, and start a new container with this new image build. The production IoT FE app is running the latest version build now.
 
-### Extra Notes
+## Extra Notes
 
 - The CMS FE app is now hosted on a GCP Compute Engine VM instance.
 - The app can now be visited at `http://34.129.248.251` with proper Basic Auth creds.

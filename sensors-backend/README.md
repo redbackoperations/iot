@@ -266,7 +266,7 @@ npm run seed-sensors-data
    - The docker build command needs to be updated to: `docker build -f ./Dockerfile.iot-data-processor -t iot-data-processor .`
    - Change the docker image name from `cms-be` to `iot-data-processor`.
 
-### Extra Notes
+## Extra Notes
 
 - Both the API server and "sensors data processor" are now hosted on a GCP Compute Engine VM instance.
 - The APIs can now be visited at `http://34.129.248.251:3000` with proper Basic Auth creds.
