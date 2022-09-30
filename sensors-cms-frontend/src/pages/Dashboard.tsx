@@ -132,13 +132,7 @@ function Dashboard() {
 
   return (
     <>
-      <Grid
-        container
-        spacing={3}
-        justifyContent="center"
-        alignContent={'center'}
-        textAlign="center"
-      >
+      <Grid container spacing={3} justifyContent="start" alignContent={'center'} textAlign="center">
         <Grid item xs={12} md={4} lg={4}>
           <DataCountCard
             title="Bikes"
@@ -190,22 +184,26 @@ function Dashboard() {
         <Grid item xs={12} md={3} lg={3}>
           <PieChart data={deviceDataCountData} loading={deviceDataCountloading} />
         </Grid>
-        {Object.values(DeviceType).map((deviceType) => (
-          <Grid
-            key={deviceType}
-            item
-            xs={12}
-            md={3}
-            lg={3}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-evenly',
-            }}
-          >
-            <LineChart data={groupedData && groupedData[deviceType]} loading={deviceDataloading} />
-          </Grid>
-        ))}
+        {Object.values(DeviceType).map(
+          (deviceType) =>
+            groupedData &&
+            groupedData[deviceType] && (
+              <Grid
+                key={deviceType}
+                item
+                xs={12}
+                md={3}
+                lg={3}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-evenly',
+                }}
+              >
+                <LineChart data={groupedData[deviceType]} loading={deviceDataloading} />
+              </Grid>
+            )
+        )}
 
         <Grid item xs={12} md={12} lg={12}>
           <RecentList data={deviceData} loading={deviceDataloading} />

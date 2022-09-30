@@ -6,7 +6,7 @@
 
 ## Prerequisites
 
-1. This driver is tested in a **Linux OS enviroment** - Raspberry Pi 4 Model B. It doesn't work in MacOS due to some missing packages. Most probably, it won't work for Windows either. So a **Linux OS enviroment** is needed to run this driver.
+1. This driver is tested in a **Linux OS environment** - Raspberry Pi 4 Model B. It doesn't work in MacOS due to some missing packages. Most probably, it won't work for Windows either. So a **Linux OS environment** is needed to run this driver.
 
 2. Please follow the [gatt-python](https://github.com/getsenic/gatt-python) module's README to install all of the necessary dependencies.
 
@@ -42,11 +42,11 @@ Subscribed: 1 [<paho.mqtt.reasoncodes.ReasonCodes object at 0xb4fece50>, <paho.m
 ...
 ```
 
-5. Connect to your MQTT broker using either a MQTT CLI tool or a MQTT UI tool. And subscribe to the MQTT command and command report topics, such as `bike/000001/resistance` and `bike/000001/resistance/report`.
+5. Connect to your MQTT broker using either a MQTT CLI tool or a MQTT UI tool. And subscribe to the MQTT command and command report topics, such as `bike/000001/resistance/control` and `bike/000001/resistance`.
 
-6. You can now publish a MQTT message to the corresponding command topic (e.g., `bike/000001/resistance` or `bike/000001/incline`) with a `text/plain` payload like: `-10` for incline or `100` for resistance.
+6. You can now publish a MQTT message to the corresponding command topic (e.g., `bike/000001/resistance/control` or `bike/000001/incline/control`) with a `text/plain` payload like: `-10` for incline or `100` for resistance.
 
-7. From the terminal log, you will see a MQTT command message has been received and it's sent to the BLE FTMS control point for assigning the new value:
+7. From the terminal log, you will see a MQTT command message has been received and it's sent to the BLE FTMS control point for resistance control or the custom Characteristic control point for incline control to assign the new value:
 
 ```
 ...
@@ -60,7 +60,7 @@ A new inclination has been set successfully: -10
 ...
 ```
 
-8. From the MQTT broker interface you've connected before, since a new resistance/incline value has been set, you will see a new command report with the newly assigned value coming up to the subscribed command report topic, such as `bike/000001/resistance/report` or `bike/000001/incline/report`.
+8. From the MQTT broker interface you've connected before, since a new resistance/incline value has been set, you will see a new command report with the newly assigned value coming up to the subscribed command report topic, such as `bike/000001/resistance` or `bike/000001/incline`.
 
 ## Helpful Resources
 
