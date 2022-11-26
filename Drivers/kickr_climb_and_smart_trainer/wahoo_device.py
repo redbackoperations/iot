@@ -117,7 +117,7 @@ class WahooDevice(gatt.Device):
             self.ftms_set_target_resistance_level(self.resistance)
 
             # request incline control
-            self.custom_control_point_request_control()
+            self.custom_control_point_enable_notifications()
             # reset incline to the flat level: 0%
             self.custom_control_point_set_target_inclination(self.inclination)
 
@@ -134,10 +134,11 @@ class WahooDevice(gatt.Device):
             self.new_resistance = new_resistance
             sleep(WRITEVALUE_WAIT_TIME)
             
-    def custom_control_point_request_control(self):
+    def custom_control_point_enable_notification(self):
         if self.custom_incline_characteristic:
-            print("Requesting custom incline control...")
-            self.ftms_control_point.write_value(bytearray([INCLINE_REQUEST_CONTROL]))
+            # has to do this step to be able to send incline value successfully
+            print("Enabling notifications for custom incline endpoint...")
+            self.custom_incline_characteristic.enable_notifications()
             sleep(WRITEVALUE_WAIT_TIME)
 
     # the inclination value range is -10 to 19, in Percent with a resolution of 0.5%
@@ -199,6 +200,12 @@ class WahooDevice(gatt.Device):
         if service_or_characteristic_found_full_match(INCLINE_CONTROL_CHARACTERISTIC_UUID, characteristic.uuid):
             if self.new_inclination is not None:
                 self.set_new_inclination_failed()
+
+    def characteristic_enable_notification_succeeded(self, characteristic):
+        print(f"The {characteristic.uuid} has been enabled with notification!")
+
+    def characteristic_enable_notification_failed(self, characteristic, error):
+        print(f"Cannot enable notification for {characteristic.uuid}: {str(error)}")      
 
     # process the Indoor Bike Data
     def process_indoor_bike_data(self, value):
@@ -317,7 +324,6 @@ class WahooDevice(gatt.Device):
     def characteristic_value_updated(self, characteristic, value):
         if characteristic == self.indoor_bike_data:
             self.process_indoor_bike_data(value)
-
 
     # this is the main process that will be run all time after manager.run() is called
     def services_resolved(self):
