@@ -134,7 +134,7 @@ class WahooDevice(gatt.Device):
             self.new_resistance = new_resistance
             sleep(WRITEVALUE_WAIT_TIME)
             
-    def custom_control_point_enable_notification(self):
+    def custom_control_point_enable_notifications(self):
         if self.custom_incline_characteristic:
             # has to do this step to be able to send incline value successfully
             print("Enabling notifications for custom incline endpoint...")
