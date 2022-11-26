@@ -14,7 +14,7 @@ root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.append(root_folder)
 
 from lib.ble_helper import convert_incline_to_op_value, service_or_characteristic_found, service_or_characteristic_found_full_match, decode_int_bytes, covert_negative_value_to_valid_bytes
-from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID, INDOOR_BIKE_DATA_UUID, DEVICE_UNIT_NAMES
+from lib.constants import FTMS_UUID, RESISTANCE_LEVEL_RANGE_UUID, INCLINATION_RANGE_UUID, FTMS_CONTROL_POINT_UUID, FTMS_REQUEST_CONTROL, FTMS_RESET, FTMS_SET_TARGET_RESISTANCE_LEVEL, INCLINE_REQUEST_CONTROL, INCLINE_CONTROL_OP_CODE, INCLINE_CONTROL_SERVICE_UUID, INCLINE_CONTROL_CHARACTERISTIC_UUID, INDOOR_BIKE_DATA_UUID, DEVICE_UNIT_NAMES
 
 # a sleep time to wait for a characteristic.writevalue() action to be completed
 WRITEVALUE_WAIT_TIME = 0.5 # TODO: If this doesn't work well, it needs to change this short sleep mechainism to a async process mechainism for sending consequetive BLE commands (eg., threading control)
@@ -111,9 +111,13 @@ class WahooDevice(gatt.Device):
             self.resistance = 0
             self.inclination = 0
 
+            # request resistance control
+            self.ftms_request_control()
             # reset resistance down to 0%
             self.ftms_set_target_resistance_level(self.resistance)
 
+            # request incline control
+            self.custom_control_point_request_control()
             # reset incline to the flat level: 0%
             self.custom_control_point_set_target_inclination(self.inclination)
 
@@ -124,13 +128,16 @@ class WahooDevice(gatt.Device):
     def ftms_set_target_resistance_level(self, new_resistance):
         print(f"Trying to set a new resistance value: {new_resistance}")
 
-        # always request control first
-        self.ftms_request_control()
-
         if self.ftms_control_point:
             # initiate the action
             self.ftms_control_point.write_value(bytearray([FTMS_SET_TARGET_RESISTANCE_LEVEL, new_resistance]))
             self.new_resistance = new_resistance
+            sleep(WRITEVALUE_WAIT_TIME)
+            
+    def custom_control_point_request_control(self):
+        if self.custom_incline_characteristic:
+            print("Requesting custom incline control...")
+            self.ftms_control_point.write_value(bytearray([INCLINE_REQUEST_CONTROL]))
             sleep(WRITEVALUE_WAIT_TIME)
 
     # the inclination value range is -10 to 19, in Percent with a resolution of 0.5%

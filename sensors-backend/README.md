@@ -269,4 +269,4 @@ npm run seed-sensors-data
 ## Extra Notes
 
 - Both the API server and "sensors data processor" are now hosted on a GCP Compute Engine VM instance.
-- The APIs can now be visited at `http://34.129.248.251:3000` with proper Basic Auth creds.
+- The APIs can now be visited at `http://34.129.10.237:3000` with proper Basic Auth creds.

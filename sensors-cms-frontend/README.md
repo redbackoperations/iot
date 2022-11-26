@@ -51,5 +51,5 @@ The `/dashboard` page is able to fetch the latest sensors data from DB automatic
 ## Extra Notes
 
 - The CMS FE app is now hosted on a GCP Compute Engine VM instance.
-- The app can now be visited at `http://34.129.248.251` with proper Basic Auth creds.
-- It's fetching sensors data from a backend API server at `http://34.129.248.251:3000`.
+- The app can now be visited at `http://34.129.10.237` with proper Basic Auth creds.
+- It's fetching sensors data from a backend API server at `http://34.129.10.237:3000`.
