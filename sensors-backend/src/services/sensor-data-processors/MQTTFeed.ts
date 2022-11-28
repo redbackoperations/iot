@@ -69,7 +69,7 @@ mqttClient.subscribe(process.env.MQTT_POWER_TOPIC)
 mqttClient.subscribe(process.env.MQTT_HEART_RATE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_RESISTANCE_TOPIC)
 mqttClient.subscribe(process.env.MQTT_INCLINE_TOPIC)
-mqttClient.subscribe(process.env.MQTT_HEAD_WIND_TOPIC)
+mqttClient.subscribe(process.env.MQTT_FAN_TOPIC)
 
 // connect to MongoDB
 mongoose

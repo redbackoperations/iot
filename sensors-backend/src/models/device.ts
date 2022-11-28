@@ -7,10 +7,10 @@ enum DeviceType {
   speed = 'speed',
   cadence = 'cadence',
   power = 'power',
-  heartRate = 'heart-rate',
+  heartRate = 'heartrate',
   resistance = 'resistance',
   incline = 'incline',
-  headWind = 'fan',
+  fan = 'fan',
 }
 
 enum DeviceTypeUnitNames {
@@ -20,7 +20,7 @@ enum DeviceTypeUnitNames {
   heartRate = 'BPM',
   resistance = 'percentage',
   incline = 'degree',
-  headWind = 'percentage',
+  fan = 'percentage',
 }
 
 // define Bluetooth Service and Characteristic types here
