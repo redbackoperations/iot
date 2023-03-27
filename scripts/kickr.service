@@ -1,6 +1,6 @@
 [Unit]
 Description=Fan Service
-After=network.target syslog.target
+After=network.target syslog.target bluetooth.target
 
 [Service]
 User=pi

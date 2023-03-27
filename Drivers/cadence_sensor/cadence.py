@@ -175,7 +175,7 @@ class AnyDevice(gatt.Device):
             print("Nonetype error")
             pass
 
-
+            
 
 
     # Publish the cadence to MQTT
