@@ -169,6 +169,7 @@ class AnyDevice(gatt.Device):
 				reported_speed = value[2]
 				topic = f"bike/{deviceId}/fan"
 				payload = self.mqtt_data_report_payload(reported_speed)
+				
 				mqtt_client.publish(topic, payload)
 				print(f"Published speed: {reported_speed}")
 
