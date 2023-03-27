@@ -68,7 +68,7 @@ class AnyDevice(gatt.Device):
 	# The speed should be between 0 and 100 inclusive
 	def set_speed(self, new_speed):
 		if new_speed < 0 or new_speed > 100:
-			print(f"Invalid speed {speed}")
+			print(f"Invalid speed {new_speed}")
 			return
 
 		self.speed = new_speed
