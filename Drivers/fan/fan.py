@@ -49,7 +49,7 @@ class AnyDevice(gatt.Device):
 	# Called when the connection succeeds
 	def connect_succeeded(self):
 		super().connect_succeeded()
-		#print("[%s] Connected" % (self.mac_address))
+		print("[%s] Connected" % (self.mac_address))
 
 
 	# Called when the connection fails
