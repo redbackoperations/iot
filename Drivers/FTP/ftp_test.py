@@ -49,7 +49,6 @@ def calculate_ftp(power_data):
 
 def main():
     print("Starting the 20-minute FTP test...")
-
     power_data = perform_ftp_test()
     ftp = calculate_ftp(power_data)
     print(f"Your estimated FTP is: {ftp:.2f} watts")
