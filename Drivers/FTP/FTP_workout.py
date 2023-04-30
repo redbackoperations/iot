@@ -4,8 +4,13 @@ from mqtt_client import MQTTClient
 from FTP_class import FTP
 
 
+def message(self, client, userdata, msg, foo):
+    print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    foo.power_data.append(int(msg.payload.decode("utf-8")))
+
 def main():
     try:
+        #Create FTP object and initialize duration to user set parameter
         init = False
         foo = FTP()
         global mqtt_client
@@ -22,15 +27,15 @@ def main():
             else:
                 print("Invalid selection, enter 1 or 2 for selection")
 
-        #Replace hard coded MQTT client params with os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD')
-        mqtt_client = MQTTClient('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud', 'redbackiotclient', 'IoTClient@123')
-        
+        # Initialize MQTT client and subscribe to power topic
+        mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(f"bike/000001/power")
-        mqtt_client.get_client().on_message = foo.message
+        deviceId = os.getenv("DEVICE_ID")
+        mqtt_client.subscribe(f"bike/{deviceId}/power")
+        mqtt_client.get_client().on_message = message
         mqtt_client.get_client().loop_start()
         
-
+        # Start FTP test
         print("Starting the 20-minute FTP test...")
         foo.perform_ftp_test()
         foo.ftp = foo.calculate_ftp()

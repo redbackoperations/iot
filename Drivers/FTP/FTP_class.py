@@ -28,6 +28,4 @@ class FTP():
         ftp = avg_power * 0.95  # Multiply the average power by 0.95 for the 20-minute test
         return ftp
 
-    def message(self, client, userdata, msg):
-        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-        self.power_data.append(int(msg.payload.decode("utf-8")))
+
