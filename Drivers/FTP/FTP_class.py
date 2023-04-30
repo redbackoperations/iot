@@ -6,26 +6,32 @@ class FTP():
         self.power_data = [0]
         self.ftp = 0
         
-    def perform_ftp_test(self):
-        # 20 minutes in seconds
-        start_time = time.time()
-        try:
-            while time.time() - start_time < self.duration:
-                time.sleep(1)
-                if(self.power_data != None): 
-                    print("Current power: ", self.power_data[-1])
-                    print("Current time: ", time.time() - start_time)
-                else:
-                    print("No power data received")
-
-        except KeyboardInterrupt:
-            print("Test stopped")
-            print("Count of data points given: " + str(len(self.power_data)))
-            pass
-
+    def set_ftp(self, ftp):
+        self.ftp = ftp    
+    
+    def get_ftp(self):
+        return self.ftp
+    
+    def get_duration(self):
+        return self.duration
+    
+    def set_duration(self, duration):
+        self.duration = duration
+        
+    def get_power_data(self) -> list:
+        return self.power_data
+    
+    def set_power_data(self, input_data) -> list:
+        self.power_data = []
+        for x in input_data:
+            self.power_data.append(x)
+    
     def calculate_ftp(self):
         avg_power = sum(self.power_data) / len(self.power_data)
-        ftp = avg_power * 0.95  # Multiply the average power by 0.95 for the 20-minute test
-        return ftp
+        self.set_ftp(avg_power * 0.95)  
+    
+
+        
+        
 
 
