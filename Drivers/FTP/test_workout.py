@@ -6,7 +6,7 @@ import time
 import os
 from mqtt_client import MQTTClient
 from FTP_class import FTP
-from dotenv import load_dotenv
+
 
 def perform_ftp_test(ftp_object):
     # 20 minutes in seconds
@@ -43,25 +43,19 @@ def set_workout_duration(ftp_object) -> FTP:
 def main():
     try:
         #Create FTP object and initialize duration to user set parameter
-        env_path = '/home/pi/.env'
-        load_dotenv(env_path)
+
         ftp_object = FTP()
         ftp_object.__init__()
         global mqtt_client
         global deviceId
         set_workout_duration(ftp_object)
-        
         # Initialize MQTT client and subscribe to power topic
-        mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
+        mqtt_client = MQTTClient('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud', 'redbackiotclient', 'IoTClient@123')
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
-        
         deviceId = os.getenv('DEVICE_ID')
-        topic = f'bike/{deviceId}/power'
-        print(deviceId)
-        print(topic)
         
         mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(topic)
+        mqtt_client.subscribe(f'bike/000001/power')
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
         mqtt_client.get_client().loop_start()
         
@@ -78,6 +72,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-
-
-
