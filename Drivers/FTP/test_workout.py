@@ -8,7 +8,6 @@ from mqtt_client import MQTTClient
 from FTP_class import FTP
 
 
-
 def perform_ftp_test(ftp_object):
     # 20 minutes in seconds
     start_time = time.time()

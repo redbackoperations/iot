@@ -8,8 +8,6 @@ from mqtt_client import MQTTClient
 from FTP_class import FTP
 from dotenv import load_dotenv
 
-
-
 def perform_ftp_test(ftp_object):
     # 20 minutes in seconds
     start_time = time.time()
@@ -49,17 +47,21 @@ def main():
         load_dotenv(env_path)
         ftp_object = FTP()
         ftp_object.__init__()
-        
         global mqtt_client
         global deviceId
         set_workout_duration(ftp_object)
+        
         # Initialize MQTT client and subscribe to power topic
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
+        
         deviceId = os.getenv('DEVICE_ID')
+        topic = f'bike/{deviceId}/power'
         print(deviceId)
+        print(topic)
+        
         mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(f'bike/{deviceId}/power')
+        mqtt_client.subscribe(topic)
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
         mqtt_client.get_client().loop_start()
         
