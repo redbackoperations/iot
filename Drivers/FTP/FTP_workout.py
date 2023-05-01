@@ -2,7 +2,6 @@ import time
 import os
 from mqtt_client import MQTTClient
 from FTP_class import FTP
-from lib.constants import BIKE_01_SPEED_REPORT
 
 def message(self, client, userdata, msg, ftp_object):
     print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
@@ -52,8 +51,9 @@ def main():
         # Initialize MQTT client and subscribe to power topic
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
+        deviceId = os.getenv('DEVICE_ID')
         mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(BIKE_01_SPEED_REPORT)
+        mqtt_client.subscribe('bike/{deviceId}/power')
         mqtt_client.get_client().on_message = message
         mqtt_client.get_client().loop_start()
         
