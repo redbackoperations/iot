@@ -53,6 +53,7 @@ def main():
         mqtt_client = MQTTClient('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud', 'redbackiotclient', 'IoTClient@123')
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         deviceId = os.getenv('DEVICE_ID')
+        
         mqtt_client.setup_mqtt_client()
         mqtt_client.subscribe(f'bike/000001/power')
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
