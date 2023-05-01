@@ -11,7 +11,7 @@ def message(self, client, userdata, msg, ftp_object):
     print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
     ftp_object.power_data.append(int(msg.payload.decode("utf-8")))
 
-def perform_ftp_test(self, ftp_object):
+def perform_ftp_test(ftp_object):
     # 20 minutes in seconds
     start_time = time.time()
     try:
