@@ -49,6 +49,7 @@ def main():
         load_dotenv(env_path)
         ftp_object = FTP()
         ftp_object.__init__()
+        
         global mqtt_client
         global deviceId
         set_workout_duration(ftp_object)
@@ -56,6 +57,7 @@ def main():
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         deviceId = os.getenv('DEVICE_ID')
+        print(deviceId)
         mqtt_client.setup_mqtt_client()
         mqtt_client.subscribe(f'bike/{deviceId}/power')
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
