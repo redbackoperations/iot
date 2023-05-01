@@ -53,7 +53,7 @@ def main():
         print(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         deviceId = os.getenv('DEVICE_ID')
         mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe('bike/{deviceId}/power')
+        mqtt_client.subscribe(f'bike/{deviceId}/power')
         mqtt_client.get_client().on_message = message
         mqtt_client.get_client().loop_start()
         
