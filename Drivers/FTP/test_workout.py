@@ -17,7 +17,7 @@ def perform_ftp_test(ftp_object):
     try:
         while time.time() - start_time < ftp_object.duration:
             time.sleep(1)
-            if(self.power_data != None): 
+            if(ftp_object.power_data != None): 
                 print("Current power: ", ftp_object.power_data[-1])
                 print("Current time: ", time.time() - start_time)
             else:
