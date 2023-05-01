@@ -1,12 +1,14 @@
 import time
 import json
 
+
+
 class FTP():
     def __init__(self):
         self.duration = 0
         self.power_data = [1]
         self.ftp = 0
-        self.power_data.append(1)
+        self.current_power = 0
         
     def set_ftp(self, ftp):
         self.ftp = ftp    
@@ -41,12 +43,12 @@ class FTP():
             temp = self.power_data[-1]
             if temp != power_value:
                 print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))      
-                
+            self.current_power = power_value
         except json.JSONDecodeError:
             # treat it as a singular string value
             power_value = payload
         
-        self.power_data.append(power_value)
+        
 
         
         

@@ -17,6 +17,7 @@ def perform_ftp_test(ftp_object):
             if(ftp_object.power_data != None): 
                 print("Current power: ", ftp_object.power_data[-1])
                 print("Current time: ", time.time() - start_time)
+                ftp_object.power_data.append(ftp_object.current_power)
             else:
                 print("No power data received")
 
@@ -65,6 +66,7 @@ def main():
         ftp_object.calculate_ftp()
         result = ftp_object.get_ftp()
         print(f"Your estimated FTP is: {result:.2f} watts")
+        print(ftp_object.power_data)
         
     except KeyboardInterrupt:
         pass
