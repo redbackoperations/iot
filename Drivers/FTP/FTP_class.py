@@ -1,4 +1,5 @@
 import time
+import json
 
 class FTP():
     def __init__(self):
@@ -30,6 +31,11 @@ class FTP():
         avg_power = sum(self.power_data) / len(self.power_data)
         self.set_ftp(avg_power * 0.95)  
     
+    def read_remote_data(self, client, userdata, msg):
+        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        dict_of_payload = json.loads(msg.payload.decode("utf-8"))
+        power_value = dict_of_payload["value"]
+        self.power_data.append(power_value)
 
         
         

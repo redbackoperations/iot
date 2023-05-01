@@ -7,9 +7,7 @@ import os
 from mqtt_client import MQTTClient
 from FTP_class import FTP
 
-def message(self, client, userdata, msg, ftp_object):
-    print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-    ftp_object.power_data.append(int(msg.payload.decode("utf-8")))
+
 
 def perform_ftp_test(ftp_object):
     # 20 minutes in seconds
@@ -58,7 +56,7 @@ def main():
         deviceId = os.getenv('DEVICE_ID')
         mqtt_client.setup_mqtt_client()
         mqtt_client.subscribe(f'bike/000001/power')
-        mqtt_client.get_client().on_message = message
+        mqtt_client.get_client().on_message = ftp_object.read_remote_data
         mqtt_client.get_client().loop_start()
         
         # Start FTP test
