@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#! bin/bash
+#! bin/sh
 
 import time
 import os
