@@ -26,7 +26,7 @@ def perform_ftp_test(self, ftp_object):
         pass
 
 
-def set_workout_duration(self, ftp_object):
+def set_workout_duration(ftp_object) -> FTP:
     init = False
     while(init == False):
         print("Enter selection for FTP Workout mode:\n1: Test/Dev mode (2 minutes)\n2: FTP Workout mode (20 minutes)")
@@ -45,6 +45,7 @@ def main():
         #Create FTP object and initialize duration to user set parameter
 
         ftp_object = FTP()
+        ftp_object.__init__()
         global mqtt_client
         global deviceId
         set_workout_duration(ftp_object)
@@ -57,7 +58,7 @@ def main():
         mqtt_client.get_client().loop_start()
         
         # Start FTP test
-        print("Starting the 20-minute FTP test...")
+        print("Starting the FTP test...")
         perform_ftp_test(ftp_object)
         ftp_object.calculate_ftp()
         result = ftp_object.get_ftp()
