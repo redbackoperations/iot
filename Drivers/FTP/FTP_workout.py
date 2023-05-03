@@ -75,7 +75,7 @@ def main():
         result = ftp_object.get_ftp()
         print(f"Your estimated FTP is: {result:.2f} watts")
         print("Test complete, saving FTP to file...")
-        os.environ["FTP_SCORE"] = result
+        os.environ["FTP_SCORE"] = str(result)
         
     except KeyboardInterrupt:
         pass
