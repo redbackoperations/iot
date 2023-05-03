@@ -1,12 +1,15 @@
 import time
 import json
-
+import os
+from dotenv import load_dotenv
 
 class FTP():
     def __init__(self):
+        
+        load_dotenv('/home/pi/.env')
         self.duration = 0
         self.power_data = [0]
-        self.ftp = 0
+        self.ftp = os.environ.get("FTP_SCORE")
         self.current_power = 0
         
     def set_ftp(self, ftp):
