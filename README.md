@@ -20,6 +20,9 @@ Within this repo you can find the following -
 * A collection of valuable [research](https://github.com/redbackoperations/iot/tree/main/Research) that may come in handy
 * All IOT [Scripts](https://github.com/redbackoperations/iot/tree/main/scripts)
 
-# Deployment Guides
-## Docker
+## Guides
+### Docker
 A full guide on how to deploy the Docker containers for the web service can be found [here](https://github.com/redbackoperations/iot/blob/main/docs/iot-web-services-deploy-guide.md)
+
+### Remote Access
+A guide on how to access the project's Pi from outside of the Deakin network can be found [here](https://github.com/redbackoperations/iot/blob/main/docs/pi-remote-access-guide.md)
