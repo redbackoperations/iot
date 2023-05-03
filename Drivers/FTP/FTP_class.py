@@ -2,11 +2,10 @@ import time
 import json
 
 
-
 class FTP():
     def __init__(self):
         self.duration = 0
-        self.power_data = [1]
+        self.power_data = [0]
         self.ftp = 0
         self.current_power = 0
         
@@ -34,6 +33,8 @@ class FTP():
         avg_power = sum(self.power_data) / len(self.power_data)
         self.set_ftp(avg_power * 0.95)  
         
+    # This is a callback function is to be used a message is received via MQTT in the FTP_Workout.py script,
+    # Its use case is only for the FTP workout mode, and it is not to be used in any other context
     def read_remote_data(self, client, userdata, msg):
         payload = msg.payload.decode("utf-8")
         try:

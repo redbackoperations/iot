@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #! bin/bash
 #! bin/sh
-
+import sys
 import time
 import os
 from mqtt_client import MQTTClient
@@ -28,19 +28,13 @@ def perform_ftp_test(ftp_object):
 
 
 def set_workout_duration(ftp_object) -> FTP:
-    init = False
-    while(init == False):
-        print("Enter selection for FTP Workout mode:\n1: Test/Dev mode (2 minutes)\n2: FTP Workout mode (20 minutes)")
-        mode_selection = input("Enter selection: ")
-        if(mode_selection == "1"):
-            ftp_object.duration = 120
-            init = True
-        elif(mode_selection == "2"):
-            ftp_object.duration = 1200
-            init = True
-        else:
-            print("Invalid selection, enter 1 or 2 for selection")
-
+    if len(sys.argv) > 1:
+        ftp_object.duration = int(sys.argv[1] * 60)
+        print("Duration set to " + str(sys.argv[1]) + " minutes")
+    else:
+        ftp_object.duration = 20 * 60
+        print("Duration not specified, defaulting to 20 minutes")
+    
 def main():
     try:
         #Create FTP object and initialize duration to user set parameter
