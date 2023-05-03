@@ -6,7 +6,7 @@ import time
 import os
 from mqtt_client import MQTTClient
 from FTP_class import FTP
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 
 def perform_ftp_test(ftp_object):
     ## Reads previously saved FTP value from the .env file
@@ -75,7 +75,7 @@ def main():
         result = ftp_object.get_ftp()
         print(f"Your estimated FTP is: {result:.2f} watts")
         print("Test complete, saving FTP to file...")
-        os.environ["FTP_SCORE"] = str(result)
+        set_key(env_path, 'FTP_SCORE', str(result))
         
     except KeyboardInterrupt:
         pass
