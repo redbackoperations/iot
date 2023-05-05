@@ -188,7 +188,7 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
-		mqtt_client.subscribe(f"bike/{deviceId}/fan/control")
+		mqtt_client.subscribe(f"bike/{deviceId}/speed")
 		mqtt_client.get_client().on_message = message
 		mqtt_client.get_client().on_publish = publish
 		mqtt_client.get_client().loop_start()
