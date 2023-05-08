@@ -10,26 +10,36 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	bike_speed = int(str(msg.payload.decode("utf-8"))) #msg received is speed of the bike in m/s
-	if bike_speed < 0:
-		print(f"Invalid speed in message: {msg}")
-		return
-	# Maximum bike speed is around 20 m/s, setting fan_speed according to bike_speed
-	if bike_speed == 0:
-		fan_speed = 0 # Minimum fan speed
-	elif bike_speed > 0 and bike_speed <= 4:
-		fan_speed = 20
-	elif bike_speed > 4 and bike_speed <= 8:
-		fan_speed = 40
-	elif bike_speed > 8 and bike_speed <= 12:
-		fan_speed = 60
-	elif bike_speed > 12 and bike_speed <= 16:
-		fan_speed = 80
-	elif bike_speed > 16:
-		fan_speed = 100 # Maximum fan speed
+	payload = msg.payload.decode("utf-8") #msg received is speed of the bike in m/s
+	print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 	
-	print(f"Setting speed to {fan_speed}")
-	device.set_speed(fan_speed)
+ 	#Extract value from payload
+	dict_of_payload = json.loads(payload)
+	bike_speed = int(dict_of_payload["value"])
+	print("Processed speed to set to device: ", bike_speed)
+	if bike_speed != 0:
+		if bike_speed < 0:
+			print(f"Invalid speed in message: {msg}")
+			return
+		# Maximum bike speed is around 20 m/s, setting fan_speed according to bike_speed
+		if bike_speed == 0:
+			fan_speed = 0 # Minimum fan speed
+		elif bike_speed > 0 and bike_speed <= 4:
+			fan_speed = 20
+		elif bike_speed > 4 and bike_speed <= 8:
+			fan_speed = 40
+		elif bike_speed > 8 and bike_speed <= 12:
+			fan_speed = 60
+		elif bike_speed > 12 and bike_speed <= 16:
+			fan_speed = 80
+		elif bike_speed > 16:
+			fan_speed = 100 # Maximum fan speed
+		else:
+			print(f"Invalid speed in message: {msg}")
+			return
+
+		print(f"Setting speed to {fan_speed}")
+		device.set_speed(fan_speed)
 
 # Called when an update is published back to MQTT.
 # Stop the default implementation from printing the message id to the log
@@ -202,7 +212,8 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
-		mqtt_client.subscribe(f"bike/{deviceId}/speed")
+		topic = f'bike/{deviceId}/speed'
+		mqtt_client.subscribe(topic)
 		mqtt_client.get_client().on_message = message
 		mqtt_client.get_client().on_publish = publish
 		mqtt_client.get_client().loop_start()
