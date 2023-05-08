@@ -10,12 +10,26 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	speed = int(str(msg.payload.decode("utf-8")))
-	if speed < 0 or speed > 100:
+	bike_speed = int(str(msg.payload.decode("utf-8"))) #msg received is speed of the bike in m/s
+	if bike_speed < 0:
 		print(f"Invalid speed in message: {msg}")
 		return
-	print(f"Setting speed to {speed}")
-	device.set_speed(speed)
+	# Maximum bike speed is around 20 m/s, setting fan_speed according to bike_speed
+	if bike_speed == 0:
+		fan_speed = 0 # Minimum fan speed
+	elif bike_speed > 0 and bike_speed <= 4:
+		fan_speed = 20
+	elif bike_speed > 4 and bike_speed <= 8:
+		fan_speed = 40
+	elif bike_speed > 8 and bike_speed <= 12:
+		fan_speed = 60
+	elif bike_speed > 12 and bike_speed <= 16:
+		fan_speed = 80
+	elif bike_speed > 16:
+		fan_speed = 100 # Maximum fan speed
+	
+	print(f"Setting speed to {fan_speed}")
+	device.set_speed(fan_speed)
 
 # Called when an update is published back to MQTT.
 # Stop the default implementation from printing the message id to the log
