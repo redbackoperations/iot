@@ -10,7 +10,10 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	bike_speed = int(str(msg.payload.decode("utf-8"))) #msg received is speed of the bike in m/s
+	payload = int(str(msg.payload.decode("utf-8"))) #msg received is speed of the bike in m/s
+	dict_of_payload = json.loads(payload)
+	bike_speed = dict_of_payload["value"]
+
 	if bike_speed < 0:
 		print(f"Invalid speed in message: {msg}")
 		return
@@ -27,7 +30,10 @@ def message(client, userdata, msg):
 		fan_speed = 80
 	elif bike_speed > 16:
 		fan_speed = 100 # Maximum fan speed
-	
+	else:
+		print(f"Invalid speed in message: {msg}")
+		return
+
 	print(f"Setting speed to {fan_speed}")
 	device.set_speed(fan_speed)
 
