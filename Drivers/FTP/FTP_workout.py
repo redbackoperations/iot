@@ -16,7 +16,8 @@ def perform_ftp_test(ftp_object):
     
     start_time = time.time()
     try:
-        while time.time() - start_time < ftp_object.duration:
+        #NOTE: adding a value in the command line will set the duration of the test in minutes
+        while time.time() - start_time < (ftp_object.duration*60):
             # Counts up to the duration set by the user 
             time.sleep(1)
             if(ftp_object.power_data != None): 
@@ -35,11 +36,11 @@ def perform_ftp_test(ftp_object):
 def set_workout_duration(ftp_object) -> FTP:
     # reads command line arg for setting duration of workout
     if len(sys.argv) > 1:
-        ftp_object.duration = int(sys.argv[1] * 60)
+        ftp_object.duration = int(sys.argv[1])
         print("Duration set to " + str(sys.argv[1]) + " minutes")
     else:
         # default duration is 20 minutes (no argument given)
-        ftp_object.duration = 20 * 60
+        ftp_object.duration = 20
         print("Duration not specified, defaulting to 20 minutes")
     
 def main():
