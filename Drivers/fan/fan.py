@@ -10,9 +10,12 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	payload = int(str(msg.payload.decode("utf-8"))) #msg received is speed of the bike in m/s
+	payload = msg.payload.decode("utf-8") #msg received is speed of the bike in m/s
+	print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+	
+ 	#Extract value from payload
 	dict_of_payload = json.loads(payload)
-	bike_speed = dict_of_payload["value"]
+	bike_speed = int(dict_of_payload["value"])
 
 	if bike_speed < 0:
 		print(f"Invalid speed in message: {msg}")
@@ -208,7 +211,8 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
-		mqtt_client.subscribe(f"bike/{deviceId}/speed")
+		topic = f'bike/{deviceId}/speed'
+		mqtt_client.subscribe(topic)
 		mqtt_client.get_client().on_message = message
 		mqtt_client.get_client().on_publish = publish
 		mqtt_client.get_client().loop_start()
