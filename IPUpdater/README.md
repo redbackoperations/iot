@@ -5,21 +5,33 @@
 Given that there is not a static IP address for the Pi and some users need to access the Pi remotely via SSH and the Deakin VPN, a way of keeping track of the IP address was needed. 
 To accomplish this, we have created a Telegram Bot and a group. Via the scripts within this repository, the IP of the Pi can be checked every 10 minutes and if it has been changed a new message will be sent to the Telegram group allowing participants to see the new IP.
 
-## Deployment
+## Deployment on new Linux Install
 
-If this is the first time setup on a new Pi OS install, after cloning the repository you will need to set an environment variable for the bot token. This can be done via the following code:
+### Step 1
+After cloning the repository you will need to set an environment variable for the bot token. This can be done via the following code:
 ```
 export BOT_TOKEN=your-bot-token-here
 ```
 The bot token can be retrieved from the handover documentation or the company leaders.
 
-After doing this, run the following code to make the IP check script executable:
+### Step 2
+Run the command below to install the pyTelegramBotAPI
+```
+$ pip install pyTelegramBotAPI
+```
+
+### Step 3
+Run the following code to make the IP check script executable:
 ```
 chmod +x check_ip.sh
 ```
-Should this return an error, run the command as sudo.
+Should this return an error, run the command as sudo as per the below:
+```
+sudo chmod +x check_ip.sh
+```
 
-Next, you will need to add the script to a cron schedule to run every 10 minutes. This can be done by first running
+### Step 4
+You will need to add the script to a cron schedule to run every 10 minutes. This can be done by first running
 ```
 crontab -e
 ```
