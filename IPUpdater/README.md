@@ -1,0 +1,31 @@
+# Raspberry Pi IP Address Update Bot
+
+## Purpose
+
+Given that there is not a static IP address for the Pi and some users need to access the Pi remotely via SSH and the Deakin VPN, a way of keeping track of the IP address was needed. 
+To accomplish this, we have created a Telegram Bot and a group. Via the scripts within this repository, the IP of the Pi can be checked every 10 minutes and if it has been changed a new message will be sent to the Telegram group allowing participants to see the new IP.
+
+## Deployment
+
+If this is the first time setup on a new Pi OS install, after cloning the repository you will need to set an environment variable for the bot token. This can be done via the following code:
+```
+export BOT_TOKEN=your-bot-token-here
+```
+The bot token can be retrieved from the handover documentation or the company leaders.
+
+After doing this, run the following code to make the IP check script executable:
+```
+chmod +x check_ip.sh
+```
+Should this return an error, run the command as sudo.
+
+Next, you will need to add the script to a cron schedule to run every 10 minutes. This can be done by first running
+```
+crontab -e
+```
+
+Once in the editor, append the below to the cron schedule. Note: change the file path if needed.
+```
+*/10 * * * * /home/iot/IPUpdater/check_ip.sh
+```
+After this the script will be run every 10 minutes and, if need be, an updated IP will be sent to the Telegram group.
