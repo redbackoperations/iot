@@ -8,16 +8,15 @@ To accomplish this, we have created a Telegram Bot and a group. Via the scripts 
 ## Deployment on new Linux Install
 
 ### Step 1
-After cloning the repository you will need to set an environment variable for the bot token. This can be done via the following code:
-```
-export BOT_TOKEN=your-bot-token-here
-```
-The bot token can be retrieved from the handover documentation or the company leaders.
-
-### Step 2
 Run the command below to install the pyTelegramBotAPI
 ```
-$ pip install pyTelegramBotAPI
+pip install pyTelegramBotAPI
+```
+
+### Step 2
+Clone the repository and run the script "ip_check_setup.sh". Please have your bot token ready to enter when prompted. Do not add any spaces before or after the token.
+```
+sh ip_check_setup.sh
 ```
 
 ### Step 3
