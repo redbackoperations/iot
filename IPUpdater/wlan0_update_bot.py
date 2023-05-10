@@ -4,7 +4,9 @@ import telebot
 
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
-with open("eth0.txt") as file:
+filepath = os.path.join("/home/pi/IPInfo", "wlan0.txt")
+
+with open(filepath) as file:
         ip = file.readline()
 
 file.close()
