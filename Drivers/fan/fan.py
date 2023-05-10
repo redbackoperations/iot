@@ -58,6 +58,7 @@ class AnyDeviceManager(gatt.DeviceManager):
 			dev.startCount = 0
 			dev.sendCount = 0
 			dev.speed = 0
+			dev.zeroCount = 0 
 			dev.connect()
 			self.stop_discovery()
 			global device
@@ -66,6 +67,8 @@ class AnyDeviceManager(gatt.DeviceManager):
 
 # Send a given value to the fan through Bluetooth
 class AnyDevice(gatt.Device):
+	# Upper limit for number of 0 valued payloads to publish
+	ZERO_LIMIT = 10
 	# When the program exits, stop measurements and discovery services
 	def __del__(self):
 		self.stop_measurements()
@@ -190,12 +193,20 @@ class AnyDevice(gatt.Device):
 			# The fan has several payloads to report its speed, but when
 			# idle, it returns fd 01 xx 04, where xx is the speed (0 to 100)
 			if len(value) == 4 and value[0] == 0xFD and value[1] == 0x01 and value[3] == 0x04:
-				reported_speed = value[2]
-				topic = f"bike/{deviceId}/fan"
-				payload = self.mqtt_data_report_payload(reported_speed)
-				
-				mqtt_client.publish(topic, payload)
-				print(f"Published speed: {reported_speed}")
+				# Check for zero value and value of zero counter. Continue if value is not 0 or 0 limit not reached
+				if not(value[2] == 0x00 and self.zeroCount >= ZERO_LIMIT):
+					# Check if value is 0 and if so inc the zero counter. If value is not 0 then reset 0 counter
+					# Zero counter will always reset when non-zero data published so it is most efficient to reset the zero counter
+					# every time a non-zero is published as opposed to checking if zero counter is already 0 
+					if value[2] == 0x00:
+						self.zeroCount += 1
+					else:
+						self.zeroCount = 0
+					reported_speed = value[2]
+					topic = f"bike/{deviceId}/fan"
+					payload = self.mqtt_data_report_payload(reported_speed)				
+					mqtt_client.publish(topic, payload)
+					print(f"Published speed: {reported_speed}")
 
 	def mqtt_data_report_payload(self, value):
 		# TODO: add more json data payload whenever needed later
