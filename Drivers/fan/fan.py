@@ -60,6 +60,7 @@ class AnyDeviceManager(gatt.DeviceManager):
 			dev.speed = 0
 			dev.zeroCount = 0 
 			dev.connect()
+			dev.zero_limit = 10
 			self.stop_discovery()
 			global device
 			device = dev
@@ -68,7 +69,7 @@ class AnyDeviceManager(gatt.DeviceManager):
 # Send a given value to the fan through Bluetooth
 class AnyDevice(gatt.Device):
 	# Upper limit for number of 0 valued payloads to publish
-	ZERO_LIMIT = 10
+	
 	# When the program exits, stop measurements and discovery services
 	def __del__(self):
 		self.stop_measurements()
@@ -194,7 +195,7 @@ class AnyDevice(gatt.Device):
 			# idle, it returns fd 01 xx 04, where xx is the speed (0 to 100)
 			if len(value) == 4 and value[0] == 0xFD and value[1] == 0x01 and value[3] == 0x04:
 				# Check for zero value and value of zero counter. Continue if value is not 0 or 0 limit not reached
-				if not(value[2] == 0x00 and self.zeroCount >= ZERO_LIMIT):
+				if not(value[2] == 0x00 and self.zeroCount >= self.zero_limit):
 					# Check if value is 0 and if so inc the zero counter. If value is not 0 then reset 0 counter
 					# Zero counter will always reset when non-zero data published so it is most efficient to reset the zero counter
 					# every time a non-zero is published as opposed to checking if zero counter is already 0 
