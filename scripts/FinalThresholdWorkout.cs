@@ -1,32 +1,36 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 class ThresholdWorkout {
     // Define the constants for the workout
-    const int IntervalDuration = 30; // in seconds
-    const int NumIntervals = 2;
-    const int RestDuration = 20; // in seconds
-    const int WarmupDuration = 25; // in seconds
-    const int CooldownDuration = 15; // in seconds
+    const int IntervalDuration = 180; // in seconds
+    const int NumIntervals = 4;
+    const int RestDuration = 60; // in seconds
+    const int WarmupDuration = 300; // in seconds
+    const int CooldownDuration = 300; // in seconds
 
-    // Define the power output for each part of the workout
+    // Define the power output percentages for each part of the workout
     static int ThresholdPower;
-    static int IntervalPower = 0; // initialize to 0
-    const int RestPower = 100; // in watts
-    const int WarmupPower = 45; // in watts
-    const int CooldownPower = 55; // in watts
+    const double IntervalPowerPercentage = 0.90; // 90% of the threshold power
+    const double RestPowerPercentage = 0.50; // 50% of the threshold power
+    const double WarmupPowerPercentage = 0.30; // 30% of the threshold power
+    const double CooldownPowerPercentage = 0.30; // 30% of the threshold power
 
     // Define a function to calculate the power output for a given time during the workout
     static int CalculatePowerOutput(int time) {
         if (time < WarmupDuration) {
-            return WarmupPower;
+            return (int)(ThresholdPower * WarmupPowerPercentage);
         } else if (time < WarmupDuration + NumIntervals * (IntervalDuration + RestDuration)) {
             int intervalIndex = (time - WarmupDuration) / (IntervalDuration + RestDuration);
             int intervalStartTime = WarmupDuration + intervalIndex * (IntervalDuration + RestDuration);
             int intervalElapsedTime = time - intervalStartTime;
-            return (intervalElapsedTime < IntervalDuration) ? IntervalPower : RestPower;
+            if (intervalElapsedTime < IntervalDuration) {
+                return (int)(ThresholdPower * IntervalPowerPercentage);
+            } else {
+                return (int)(ThresholdPower * RestPowerPercentage);
+            }
         } else {
-            return CooldownPower;
+            return (int)(ThresholdPower * CooldownPowerPercentage);
         }
     }
 
@@ -36,7 +40,7 @@ class ThresholdWorkout {
         await Task.Delay(2000); // Wait for 2 seconds before starting to simulate the workout
 
         int currentTime = 0;
-        int TotalDuration = (NumIntervals * IntervalDuration) + (NumIntervals - 1) * RestDuration + WarmupDuration + CooldownDuration; // Declare TotalDuration before it is used
+        int TotalDuration = (NumIntervals * IntervalDuration) + (NumIntervals - 1) * RestDuration + WarmupDuration + CooldownDuration;
 
         while (currentTime < TotalDuration) {
             int powerOutput = CalculatePowerOutput(currentTime);
@@ -47,6 +51,7 @@ class ThresholdWorkout {
         }
 
         Console.WriteLine("Workout complete!");
+       
     }
 
     // Define a function to turn off the smart bike
@@ -58,8 +63,7 @@ class ThresholdWorkout {
     static async Task Main() {
         // Take input from user
         Console.Write("Enter the threshold power (in watts): ");
-        ThresholdPower = int.Parse(Console.ReadLine());
-        IntervalPower = ThresholdPower;
+        int.TryParse(Console.ReadLine(), out ThresholdPower);
 
         // Simulate the workout
         await SimulateWorkout();
