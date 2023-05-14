@@ -14,9 +14,9 @@ pip install pyTelegramBotAPI
 ```
 
 ### Step 2
-Clone the repository and run the script "ip_check_setup.sh". Please have your bot token ready to enter when prompted. Do not add any spaces before or after the token.
+Clone the repository and run the script "ip_check_setup.py". Please have your bot token ready to enter when prompted. Do not add any spaces before or after the token.
 ```
-sh ip_check_setup.sh
+python3 ip_check_setup.py
 ```
 
 ### Step 3
