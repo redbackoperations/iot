@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 class Program
 {
@@ -25,9 +26,37 @@ class Program
                 Console.WriteLine("Invalid duration. Please enter a duration between 1 and 20 minutes.");
             }
         }
-        
+
+        // Set up a flag for termination
+        bool terminate = false;
+
+        // Start a separate thread to listen for termination key
+        Thread terminationThread = new Thread(() =>
+        {
+            while (true)
+            {
+                // Read a key from the console input
+                ConsoleKeyInfo key = Console.ReadKey();
+
+                // Check if the key is the termination key (e.g., 'T' key)
+                if (key.KeyChar == 'T' || key.KeyChar == 't')
+                {
+                    terminate = true;
+                    break;
+                }
+            }
+        });
+
+        terminationThread.Start();
+
         while (true)
         {
+            // Check if the termination flag is set
+            if (terminate)
+            {
+                Console.WriteLine("Workout terminated by user.");
+                break;
+            }
 
             Console.WriteLine("Please enter your desired resistance level (1-20): ");
             int resistance = Convert.ToInt32(Console.ReadLine());
@@ -45,7 +74,15 @@ class Program
 
             for (int i = 0; i < duration * 60; i++)
             {
+                // Check if the termination flag is set
+                if (terminate)
+                {
+                    Console.WriteLine("Workout terminated by user.");
+                    break;
+                }
+
                 Console.WriteLine($"Time remaining: {duration * 60 - i} seconds");
+                Console.WriteLine("Press T anytime to terminate the workout");
                 // allow the user to adjust resistance and incline during the workout
                 if (i % 60 == 0)
                 {
@@ -79,6 +116,14 @@ class Program
                         Console.WriteLine($"Incline decreased to {incline}.");
                     }
                 }
+                Thread.Sleep(1000);
+            }
+
+            // Check if the termination flag is set
+            if (terminate)
+            {
+                Console.WriteLine("Workout terminated by user.");
+                break;
             }
 
             Console.WriteLine("Workout complete! Would you like to start another workout? (y/n)");
@@ -92,10 +137,10 @@ class Program
             }
         }
 
+        // Ensure that the termination thread is stopped
+        terminationThread.Join();
+
         Console.WriteLine($"Summary...... Workout Time: {duration} minutes");
         Console.WriteLine("Thank you for using the Smart Bike!");
-
     }
 }
-
-
