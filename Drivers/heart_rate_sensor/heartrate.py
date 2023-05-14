@@ -144,6 +144,8 @@ class AnyDevice(gatt.Device):
             #Parse heartrate to check if 0
             if heartrate == 0:
                 self.zeroCount += 1
+            else:
+                self.zeroCount = 0
 
             # Parse the energy expended (if present)
             if energyexpended:
