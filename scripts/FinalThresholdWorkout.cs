@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 class ThresholdWorkout {
     // Define the constants for the workout
-    const int IntervalDuration = 180; // in seconds
-    const int NumIntervals = 4;
-    const int RestDuration = 60; // in seconds
-    const int WarmupDuration = 300; // in seconds
-    const int CooldownDuration = 300; // in seconds
+    const int IntervalDuration = 20; // in seconds
+    const int NumIntervals = 2;
+    const int RestDuration = 15; // in seconds
+    const int WarmupDuration = 20; // in seconds
+    const int CooldownDuration = 10; // in seconds
 
     // Define the power output percentages for each part of the workout
     static int ThresholdPower;
