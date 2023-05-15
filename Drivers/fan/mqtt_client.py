@@ -4,14 +4,6 @@ import time
 import paho.mqtt.client as paho
 from paho import mqtt
 
-class Fan:
-    def __init__(self):
-        self.speed = 0
-
-    def set_speed(self, speed):
-        self.speed = speed
-        print("Fan speed set to %d." % self.speed)
-
 
 # this is a MQTT client that is able to publish to and subscribe from MQTT topics in HiveMQ Cloud
 class MQTTClient:
