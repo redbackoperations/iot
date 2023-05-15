@@ -61,9 +61,10 @@ class ThresholdWorkout {
 
     // Main function
     static async Task Main() {
-        // Take input from user
+        // Take input from user about the threshold power
         Console.Write("Enter the threshold power (in watts): ");
         int.TryParse(Console.ReadLine(), out ThresholdPower);
+        // Take input from user about number of intervals
         Console.Write("Please enter the number of intervals for the workout");
         int.TryParse(Console.ReadLine(), out NumIntervals );
 
