@@ -9,7 +9,7 @@ from dotenv import load_dotenv, set_key
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
 
 def perform_actions(incline_level):
-    mqtt_client.publish(f"bike/000001/inline/control", incline_level)
+    mqtt_client.publish(f"bike/000001/incline/control", incline_level)
 
 def perform_endurance_workout(endurance_workout_object):
     print("Starting endurance workout in 5 seconds...")
