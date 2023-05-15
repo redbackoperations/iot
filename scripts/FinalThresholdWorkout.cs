@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 class ThresholdWorkout {
     // Define the constants for the workout
     const int IntervalDuration = 20; // in seconds
-    const int NumIntervals = 2;
+    static int NumIntervals ;
     const int RestDuration = 15; // in seconds
     const int WarmupDuration = 20; // in seconds
     const int CooldownDuration = 10; // in seconds
@@ -64,6 +64,8 @@ class ThresholdWorkout {
         // Take input from user
         Console.Write("Enter the threshold power (in watts): ");
         int.TryParse(Console.ReadLine(), out ThresholdPower);
+        Console.Write("Please enter the number of intervals for the workout");
+        int.TryParse(Console.ReadLine(), out NumIntervals );
 
         // Simulate the workout
         await SimulateWorkout();
