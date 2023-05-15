@@ -36,7 +36,6 @@ def perform_strength_workout(strength_workout_object):
 
                 # Store the resistance level, resistance percentage, and current time in the strength workout object
                 strength_workout_object.resistance_data.append(resistance_level)
-                strength_workout_object.time_data.append(current_time)
 
                 # Perform the strength workout action based on the resistance level
                 perform_actions(resistance_level)
