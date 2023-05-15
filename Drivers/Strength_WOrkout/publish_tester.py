@@ -26,7 +26,7 @@ while 1:
         if user_input.isdigit():
             user_input = int(user_input)
             dump = json.dumps({"value": user_input})
-            mqtt_client.publish(f"bike/000001/resistence", f"{dump}")
+            mqtt_client.publish(f"bike/000001/resistance/control", f"{dump}")
             print("Published resistence to MQTT Broker: ", user_input)
             time.sleep(1)
         else:
