@@ -10,6 +10,10 @@ from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
 
+def perform_actions(resistence_level):
+    mqtt_client.publish(f"bike/000001/resistance/control", resistence_level)
+
+
 def perform_strength_workout(strength_workout_object):
     print("Starting strength workout in 5 seconds...")
     time.sleep(5)
@@ -35,7 +39,7 @@ def perform_strength_workout(strength_workout_object):
                 strength_workout_object.time_data.append(current_time)
 
                 # Perform the strength workout action based on the resistance level
-                strength_workout_object.perform_action(resistance_level)
+                perform_actions(resistance_level)
 
             except ValueError:
                 print("Invalid resistance percentage. Please enter a value between 0 and 100.")
