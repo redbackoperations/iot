@@ -28,7 +28,7 @@ def perform_strength_workout(strength_workout_object):
             # Read the user's desired resistance percentage from the command line
             resistance_level = input("Enter the resistance percentage (0-100%): ")
             try:
-                resistance_level = float(resistance_level)
+                resistance_level = int(resistance_level)
                 if resistance_level < 0 or resistance_level > 100:
                     print("Invalid resistance percentage. Please enter a value between 0 and 100.")
                     continue
