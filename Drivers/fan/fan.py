@@ -8,30 +8,6 @@ import json
 import time
 import platform
 
-import paho.mqtt.client as mqtt
-
-# Initialize the MQTT client
-client = mqtt.Client()
-
-# Define a callback function to handle incoming messages
-def on_message(client, userdata, message):
-    # Extract the speed value from the message payload
-    speed = float(message.payload.decode('utf-8'))
-
-    # Update the fan speed
-    # (replace this with your code to control the fan speed)
-    print("Received speed:", speed)
-
-# Connect to the MQTT broker and subscribe to the speed topic
-client.connect("mqtt.example.com")
-client.subscribe("kickr/speed")
-
-# Set the callback function for incoming messages
-client.on_message = on_message
-
-# Start the MQTT client loop (this will run forever)
-client.loop_forever()
-
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
