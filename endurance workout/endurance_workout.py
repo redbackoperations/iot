@@ -25,14 +25,13 @@ def perform_endurance_workout(endurance_workout_object):
             # Read the user's desired incline from the command line
             incline_input = input("Enter the incline (-10 to 19 with a step of 0.5): ")
             try:
-                incline = float(incline_input)
+                incline = int(incline_input)
                 if incline < -10 or incline > 19 or incline % 0.5 != 0:
                     print("Invalid incline value. Please enter a value between -10 and 19 with a step of 0.5.")
                     continue
 
                 # Store the incline, current time, and perform the endurance workout action
                 endurance_workout_object.incline_data.append(incline)
-                endurance_workout_object.time_data.append(current_time)
                 perform_actions(incline)
 
             except ValueError:
