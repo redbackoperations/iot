@@ -1,0 +1,12 @@
+[Unit]
+Description=Fan Service
+After=network.target syslog.target bluetooth.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/iot/scripts
+ExecStart=/bin/bash /home/pi/iot/scripts/start_ftp_workout.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

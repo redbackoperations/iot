@@ -10,12 +10,36 @@ import platform
 
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
-	speed = int(str(msg.payload.decode("utf-8")))
-	if speed < 0 or speed > 100:
-		print(f"Invalid speed in message: {msg}")
-		return
-	print(f"Setting speed to {speed}")
-	device.set_speed(speed)
+	payload = msg.payload.decode("utf-8") #msg received is speed of the bike in m/s
+	print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+	
+ 	#Extract value from payload
+	dict_of_payload = json.loads(payload)
+	bike_speed = int(dict_of_payload["value"])
+	print("Processed speed to set to device: ", bike_speed)
+	if bike_speed != 0:
+		if bike_speed < 0:
+			print(f"Invalid speed in message: {msg}")
+			return
+		# Maximum bike speed is around 20 m/s, setting fan_speed according to bike_speed
+		if bike_speed == 0:
+			fan_speed = 0 # Minimum fan speed
+		elif bike_speed > 0 and bike_speed <= 4:
+			fan_speed = 20
+		elif bike_speed > 4 and bike_speed <= 8:
+			fan_speed = 40
+		elif bike_speed > 8 and bike_speed <= 12:
+			fan_speed = 60
+		elif bike_speed > 12 and bike_speed <= 16:
+			fan_speed = 80
+		elif bike_speed > 16:
+			fan_speed = 100 # Maximum fan speed
+		else:
+			print(f"Invalid speed in message: {msg}")
+			return
+
+		print(f"Setting speed to {fan_speed}")
+		device.set_speed(fan_speed)
 
 # Called when an update is published back to MQTT.
 # Stop the default implementation from printing the message id to the log
@@ -34,7 +58,9 @@ class AnyDeviceManager(gatt.DeviceManager):
 			dev.startCount = 0
 			dev.sendCount = 0
 			dev.speed = 0
+			dev.zeroCount = 0 
 			dev.connect()
+			dev.zero_limit = 10
 			self.stop_discovery()
 			global device
 			device = dev
@@ -42,6 +68,8 @@ class AnyDeviceManager(gatt.DeviceManager):
 
 # Send a given value to the fan through Bluetooth
 class AnyDevice(gatt.Device):
+	# Upper limit for number of 0 valued payloads to publish
+	
 	# When the program exits, stop measurements and discovery services
 	def __del__(self):
 		self.stop_measurements()
@@ -68,7 +96,7 @@ class AnyDevice(gatt.Device):
 	# The speed should be between 0 and 100 inclusive
 	def set_speed(self, new_speed):
 		if new_speed < 0 or new_speed > 100:
-			print(f"Invalid speed {speed}")
+			print(f"Invalid speed {new_speed}")
 			return
 
 		self.speed = new_speed
@@ -166,12 +194,20 @@ class AnyDevice(gatt.Device):
 			# The fan has several payloads to report its speed, but when
 			# idle, it returns fd 01 xx 04, where xx is the speed (0 to 100)
 			if len(value) == 4 and value[0] == 0xFD and value[1] == 0x01 and value[3] == 0x04:
-				reported_speed = value[2]
-				topic = f"bike/{deviceId}/fan"
-				payload = self.mqtt_data_report_payload(reported_speed)
-				
-				mqtt_client.publish(topic, payload)
-				print(f"Published speed: {reported_speed}")
+				# Check for zero value and value of zero counter. Continue if value is not 0 or 0 limit not reached
+				if not(value[2] == 0x00 and self.zeroCount >= self.zero_limit):
+					# Check if value is 0 and if so inc the zero counter. If value is not 0 then reset 0 counter
+					# Zero counter will always reset when non-zero data published so it is most efficient to reset the zero counter
+					# every time a non-zero is published as opposed to checking if zero counter is already 0 
+					if value[2] == 0x00:
+						self.zeroCount += 1
+					else:
+						self.zeroCount = 0
+					reported_speed = value[2]
+					topic = f"bike/{deviceId}/fan"
+					payload = self.mqtt_data_report_payload(reported_speed)				
+					mqtt_client.publish(topic, payload)
+					print(f"Published speed: {reported_speed}")
 
 	def mqtt_data_report_payload(self, value):
 		# TODO: add more json data payload whenever needed later
@@ -188,7 +224,8 @@ def main():
 			os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
 		mqtt_client.setup_mqtt_client()
 		deviceId = os.getenv('DEVICE_ID')
-		mqtt_client.subscribe(f"bike/{deviceId}/fan/control")
+		topic = f'bike/{deviceId}/speed'
+		mqtt_client.subscribe(topic)
 		mqtt_client.get_client().on_message = message
 		mqtt_client.get_client().on_publish = publish
 		mqtt_client.get_client().loop_start()
