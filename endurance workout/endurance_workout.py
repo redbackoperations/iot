@@ -8,6 +8,9 @@ from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
 
+def perform_actions(incline_level):
+    mqtt_client.publish(f"bike/000001/inline/control", incline_level)
+
 def perform_endurance_workout(endurance_workout_object):
     print("Starting endurance workout in 5 seconds...")
     time.sleep(5)
@@ -30,7 +33,7 @@ def perform_endurance_workout(endurance_workout_object):
                 # Store the incline, current time, and perform the endurance workout action
                 endurance_workout_object.incline_data.append(incline)
                 endurance_workout_object.time_data.append(current_time)
-                endurance_workout_object.perform_action(incline)
+                perform_actions(incline)
 
             except ValueError:
                 print("Invalid incline value. Please enter a value between -10 and 19 with a step of 0.5.")
