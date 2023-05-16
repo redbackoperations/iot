@@ -15,6 +15,8 @@ class AnyDeviceManager(gatt.DeviceManager):
             #print("[%s] Discovered, alias = %s" % (device.mac_address, device.alias()))
             device = AnyDevice(mac_address=device.mac_address, manager=self)
             device.connect()
+            device.zero_limit = 10
+            device.zeroCount = 0
 
 # Subclass gatt.Device to implement the Heart Rate Protocol
 class AnyDevice(gatt.Device):
@@ -129,34 +131,42 @@ class AnyDevice(gatt.Device):
             heartrate = value[offset]
             offset += 1
 
-        # Parse the sensor contact information (if present)
-        if sensorcontact == 2:
-            contact = "Not detected"
-        elif sensorcontact == 3:
-            contact = "Detected"
-        else:
-            contact = None
+        #check for zero heartrate and if limit reached
+        if not(heartrate == 0 and self.zeroCount >= self.zero_limit):
+            # Parse the sensor contact information (if present)
+            if sensorcontact == 2:
+                contact = "Not detected"
+            elif sensorcontact == 3:
+                contact = "Detected"
+            else:
+                contact = None
 
-        # Parse the energy expended (if present)
-        if energyexpended:
-            energy = (value[offset+1] << 8) + value[offset]
-            offset += 2
-        else:
-            energy = None
+            #Parse heartrate to check if 0
+            if heartrate == 0:
+                self.zeroCount += 1
+            else:
+                self.zeroCount = 0
 
-        # Parse the RR interval(s) (if present)
-        # If several intervals have occurred since the last measurement
-        # they are sent from oldest to newest
-        if rrinterval:
-            interval = []
-            for index in range(offset, len(value), 2):
-                interval.append(float((value[index+1] << 8) + value[index])/1024.0)
-            offset = len(value)
-        else:
-            interval = None
+            # Parse the energy expended (if present)
+            if energyexpended:
+                energy = (value[offset+1] << 8) + value[offset]
+                offset += 2
+            else:
+                energy = None
 
-        #print("Heart Rate:",heartrate,"Contact:",contact,"Energy:",energy,"RR:",interval)
-        self.publish(ts, heartrate)
+            # Parse the RR interval(s) (if present)
+            # If several intervals have occurred since the last measurement
+            # they are sent from oldest to newest
+            if rrinterval:
+                interval = []
+                for index in range(offset, len(value), 2):
+                    interval.append(float((value[index+1] << 8) + value[index])/1024.0)
+                offset = len(value)
+            else:
+                interval = None
+
+            #print("Heart Rate:",heartrate,"Contact:",contact,"Energy:",energy,"RR:",interval)
+            self.publish(ts, heartrate)
 
 
     # Publish the heart rate to MQTT
