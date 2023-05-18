@@ -22,14 +22,14 @@ with open('eth0_temp.txt') as file:
         new_eth0 = file.readline()
 
 file.close()
-subprocess.run("rm","eth0_temp.txt")
+subprocess.run("rm eth0_temp.txt", shell=True)
 
 #get most recent WLAN0 IP
-with open('wlan_temp.txt') as file:
+with open('wlan0_temp.txt') as file:
         new_wlan0 = file.readline()
 
 file.close()
-subprocess.run("rm","wlan0_temp.txt")
+subprocess.run("rm wlan0_temp.txt", shell=True)
 
 #check if eth0 IP has changed and if necessary update env record and send telegram alert
 if new_eth0 != curr_eth0:
