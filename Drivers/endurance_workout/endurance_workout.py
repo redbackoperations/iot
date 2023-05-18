@@ -39,7 +39,6 @@ def perform_endurance_workout(endurance_workout_object):
 
             # Store the incline, current time, and perform the endurance workout action
             endurance_workout_object.incline_data.append(incline)
-            endurance_workout_object.time_data.append(current_time)
             perform_actions(incline)
 
             incline += 1
