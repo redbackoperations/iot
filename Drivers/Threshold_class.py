@@ -1,20 +1,20 @@
 import os
 from dotenv import load_dotenv
 
-class FTP:
+class ThresholdWorkout:
     def __init__(self):
         load_dotenv('/home/pi/.env')
         self.duration = 0
         self.power_data = [0]
-        self.ftp = os.environ.get("FTP_SCORE")
+        self.threshold_workout = os.environ.get("THRESHOLD_WORKOUT_SCORE")  # Updated variable name
         self.current_power = 0
         self.threshold_power = 0
     
-    def set_ftp(self, ftp):
-        self.ftp = ftp
+    def set_threshold_workout(self, threshold_workout):  # Updated method name
+        self.threshold_workout = threshold_workout
     
-    def get_ftp(self):
-        return self.ftp
+    def get_threshold_workout(self):  # Updated method name
+        return self.threshold_workout
     
     def get_duration(self):
         return self.duration
@@ -30,9 +30,9 @@ class FTP:
         for x in input_data:
             self.power_data.append(x)
     
-    def calculate_ftp(self):
+    def calculate_threshold_workout(self):  # Updated method name
         avg_power = sum(self.power_data) / len(self.power_data)
-        self.set_ftp(avg_power * 0.95)
+        self.set_threshold_workout(avg_power * 0.95)
         
     def read_remote_data(self, client, userdata, msg):
         payload = msg.payload.decode("utf-8")
@@ -65,13 +65,13 @@ class FTP:
         else:
             return 0
     
-   def calculate_resistance_required(self, current_power):
-    # Calculate the resistance required to reach the threshold power
-    #I've used hardcoded method
-    if current_power < 100:
-        resistance_required = 5
-    elif current_power < 200:
-        resistance_required = 8
-    else:
-        resistance_required = 10
-    return resistance_required
+    def calculate_resistance_required(self, current_power):
+        # Calculate the resistance required to reach the threshold power
+        # I've used a hardcoded method
+        if current_power < 100:
+            resistance_required = 5
+        elif current_power < 200:
+            resistance_required = 8
+        else:
+            resistance_required = 10
+        return resistance_required
