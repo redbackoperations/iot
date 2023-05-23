@@ -21,9 +21,9 @@ class AnyDeviceManager(gatt.DeviceManager):
 # Subclass gatt.Device to implement the Heart Rate Protocol
 class AnyDevice(gatt.Device):
     # When the program exits, stop measurements and discovery services
-    def __del__(self):
-        self.stop_measurements()
-        self.manager.stop_discovery()
+    #def __del__(self):
+        #self.stop_measurements()
+        #self.manager.stop_discovery()
 
     # Called when the connection succeeds
     def connect_succeeded(self):
@@ -69,16 +69,16 @@ class AnyDevice(gatt.Device):
     # Inform the device that we are no longer interested in measurements
     # Find the heart rate service and its measurement characteristic and
     # disable notifications from it
-    def stop_measurements(self):
-        heart_rate_service = next(
-            s for s in self.services
-            if s.uuid[4:8] == '180d')
+    #def stop_measurements(self):
+        #heart_rate_service = next(
+            #s for s in self.services
+            #if s.uuid[4:8] == '180d')
 
-        self.heart_rate_measurement_characteristic = next(
-            c for c in heart_rate_service.characteristics
-            if c.uuid[4:8] == '2a37')
+        #self.heart_rate_measurement_characteristic = next(
+            #c for c in heart_rate_service.characteristics
+            #if c.uuid[4:8] == '2a37')
 
-        self.heart_rate_measurement_characteristic.enable_notifications(False)
+        #self.heart_rate_measurement_characteristic.enable_notifications(False)
 
     # Called once the heart rate measurement notification has succeeded
     # Since we will now be receiving notifications,
@@ -191,6 +191,7 @@ def main():
             os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         mqtt_client.setup_mqtt_client()
         deviceId = os.getenv('DEVICE_ID')
+        mqtt_client.get_client().loop_start()
 
         manager = AnyDeviceManager(adapter_name=adapter_name)
         manager.prefix=alias_prefix
@@ -198,6 +199,7 @@ def main():
         manager.run()
     except KeyboardInterrupt:
         pass
+    mqtt_client.get_client().loop_stop()
 
 
 if __name__=="__main__":
