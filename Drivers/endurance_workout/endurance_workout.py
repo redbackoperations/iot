@@ -15,6 +15,21 @@ def perform_endurance_workout(endurance_workout_object):
     print("Starting endurance workout in 5 seconds...")
     time.sleep(5)
 
+    # Read the user's desired incline from the command line
+    incline = None
+    while True:
+        incline_input = input("Enter the incline (-10 to 19 with a step of 0.5): ")
+        try:
+            incline = int(incline_input)
+            if incline < -10 or incline > 19 or incline % 0.5 != 0:
+                print("Invalid incline value. Please enter a value between -10 and 19 with a step of 0.5.")
+            else:
+                break
+        except ValueError:
+            print("Invalid incline value. Please enter a valid number.")
+
+        # The valid incline value is now stored in the `incline` variable
+
     start_time = time.time()
     try:
         while True:
@@ -22,23 +37,15 @@ def perform_endurance_workout(endurance_workout_object):
             if current_time >= (endurance_workout_object.duration * 60) or current_time >= (MAX_WORKOUT_DURATION * 60):
                 break
 
-            # Read the user's desired incline from the command line
-            incline_input = input("Enter the incline (-10 to 19 with a step of 0.5): ")
-            try:
-                incline = int(incline_input)
-                if incline < -10 or incline > 19 or incline % 0.5 != 0:
-                    print("Invalid incline value. Please enter a value between -10 and 19 with a step of 0.5.")
-                    continue
+            # Store the incline, current time, and perform the endurance workout action
+            endurance_workout_object.incline_data.append(incline)
+            perform_actions(incline)
 
-                # Store the incline, current time, and perform the endurance workout action
-                endurance_workout_object.incline_data.append(incline)
-                perform_actions(incline)
+            incline += 1
+            if incline > 19:
+                incline = 19
 
-            except ValueError:
-                print("Invalid incline value. Please enter a value between -10 and 19 with a step of 0.5.")
-
-            time.sleep(1)
-
+            time.sleep(60)
     except KeyboardInterrupt:
         print("Workout stopped")
         print("Count of data points given: " + str(len(endurance_workout_object.incline_data)))

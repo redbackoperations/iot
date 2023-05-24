@@ -18,30 +18,31 @@ def perform_strength_workout(strength_workout_object):
     print("Starting strength workout in 5 seconds...")
     time.sleep(5)
 
-    start_time = time.time()
+    resistance_level = -1  # Initial value to enter the loop
+
+    while resistance_level < 0 or resistance_level > 100:
+        resistance_level = int(input("Enter the resistance percentage (0-100%): "))
+        
+        if resistance_level < 0 or resistance_level > 100:
+            print("Invalid resistance percentage. Please enter a value between 0 and 100.")
+
+
+    start_time = time.time()    
+    
     try:
         while True:
             current_time = time.time() - start_time
             if current_time >= (strength_workout_object.duration * 60) or current_time >= (MAX_WORKOUT_DURATION * 60):
                 break
 
-            # Read the user's desired resistance percentage from the command line
-            resistance_level = input("Enter the resistance percentage (0-100%): ")
-            try:
-                resistance_level = int(resistance_level)
-                if resistance_level < 0 or resistance_level > 100:
-                    print("Invalid resistance percentage. Please enter a value between 0 and 100.")
-                    continue
+            # Store the resistance level in the strength workout object
+            strength_workout_object.resistance_data.append(resistance_level)
 
+            # Perform the strength workout action based on the resistance level
+            perform_actions(resistance_level)
 
-                # Store the resistance level, resistance percentage, and current time in the strength workout object
-                strength_workout_object.resistance_data.append(resistance_level)
-
-                # Perform the strength workout action based on the resistance level
-                perform_actions(resistance_level)
-
-            except ValueError:
-                print("Invalid resistance percentage. Please enter a value between 0 and 100.")
+            if current_time % 120 == 0 and resistance_level < 100:
+                resistance_level += 5
 
             time.sleep(1)
 
