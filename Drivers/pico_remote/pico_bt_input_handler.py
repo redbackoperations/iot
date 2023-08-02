@@ -1,26 +1,25 @@
 import bluetooth
 
-server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-
+hc06_address = "98:D3:31:40:60:B0"
 port = 1
-server_sock.bind(("", port))
-server_sock.listen(1)
 
-print("Listening for connections on RFCOMM channel %d" % port)
 
-client_sock, client_info = server_sock.accept()
-print("Accepted connection from ", client_info)
+print("Connecting to socket..")
+sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+sock.connect((hc06_address, port))
 
+sock.send("Hello Pico")
+print("Connected, waiting for data")
+buffer = " "
 try:
     while True:
-        data = client_sock.recv(1024)
-        if not data:
-            break
-        print("Received: %s" % data.decode('utf-8'))
-except OSError:
-    pass
+        data = sock.recv(1024).decode('utf-8')
+        buffer += data
+        while '\n' in buffer:
+            line, buffer = buffer.split('\n', 1)
+            print("Received:", line.strip())
+except KeyboardInterrupt:
+    print("Closing connection")
 
-print("Disconnected.")
-
-client_sock.close()
-server_sock.close()
+sock.close()
+print("Connection closed")
