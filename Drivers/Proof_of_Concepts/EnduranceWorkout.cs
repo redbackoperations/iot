@@ -1,0 +1,54 @@
+using System;
+
+class CycleWorkout
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Welcome to the Cycle Endurance Workout!");
+
+        // Input variables
+        Console.Write("Enter the time in minutes (maximum 20 minutes): ");
+        int timeInMinutes = int.Parse(Console.ReadLine());
+
+        if (timeInMinutes > 20)
+        {
+            Console.WriteLine("The maximum time allowed is 20 minutes.");
+            Console.Write("Please enter the time again: ");
+            timeInMinutes = int.Parse(Console.ReadLine());
+        }
+
+        int timeInSeconds = timeInMinutes * 60; // Convert minutes to seconds
+
+        Console.Write("Enter the distance in kilometers: ");
+        double distance = double.Parse(Console.ReadLine());
+
+        Console.Write("Enter your weight in kilograms: ");
+        double weight = double.Parse(Console.ReadLine());
+
+        // Calculate calories burned
+        double calories = 0.0175 * distance * weight;
+
+        // Display workout details
+        Console.WriteLine("\nWorkout Summary:");
+        Console.WriteLine("Time: {0} minutes ({1} seconds)", timeInMinutes, timeInSeconds);
+        Console.WriteLine("Distance: {0} km", distance);
+        Console.WriteLine("Calories Burned: {0} kcal", calories);
+
+        // Calculate heart rate and resistance
+        Console.WriteLine("\nHeart Rate and Resistance:");
+        int resistance = 10; // initial resistance is 10%
+        for (int i = 0; i <= timeInSeconds; i++)
+        {
+            if (i % 60 == 0 && resistance < 100) // increase resistance every minute until it reaches 100%
+            {
+                resistance += 10;
+            }
+
+            int heartRate = 120 + (i / 10);
+            Console.WriteLine("{0} seconds: {1} bpm, {2}% resistance", i, heartRate, resistance);
+        }
+
+        Console.WriteLine("\nThank you for using the Cycle Endurance Workout program!");
+    }
+}
+
