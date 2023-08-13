@@ -1,21 +1,31 @@
+
 #!/usr/bin/env python3
 import sys
 import time
 import os
+import csv
 from mqtt_client import MQTTClient
 from EnduranceWorkout_class import EnduranceWorkout
 from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
+speed_data_file = 'speed_data.csv'
 
 def perform_actions(incline_level):
     mqtt_client.publish(f"bike/000001/incline/control", incline_level)
 
-def perform_endurance_workout(endurance_workout_object):
+def record_speed_data(client, userdata, message):
+    """Callback function to handle incoming speed data and write to a CSV."""
+    with open(speed_data_file, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([time.time(), message.payload.decode()])  # write current time and speed value    
+
+def perform_endurance_workout(endurance_workout_object, target_distance):
     print("Starting endurance workout in 5 seconds...")
     time.sleep(5)
 
     # Read the user's desired incline from the command line
+    
     incline = None
     while True:
         incline_input = input("Enter the incline (-10 to 19 with a step of 0.5): ")
@@ -34,6 +44,11 @@ def perform_endurance_workout(endurance_workout_object):
     try:
         while True:
             current_time = time.time() - start_time
+            distance_covered = calculate_distance_from_csv()
+            if distance_covered >= target_distance:
+                print(f"Target distance of {target_distance} km reached!")
+                break
+            
             if current_time >= (endurance_workout_object.duration * 60) or current_time >= (MAX_WORKOUT_DURATION * 60):
                 break
 
@@ -63,6 +78,21 @@ def set_workout_duration(endurance_workout_object):
         endurance_workout_object.duration = 20
         print("Duration not specified, defaulting to 20 minutes")
 
+def calculate_distance_from_csv():
+    last_time = None
+    distance = 0.0  # in kilometers or the unit of speed
+
+    with open(speed_data_file, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            current_time, speed = float(row[0]), float(row[1])  # Extract time and speed
+            if last_time:  # Skip the first row
+                time_difference = current_time - last_time  # Time difference in seconds
+                distance += (speed * (time_difference / 3600))  # speed * time (converted to hours)
+            last_time = current_time
+
+    return distance        
+
 def main():
     try:
         # Load environment variables from the .env file
@@ -87,13 +117,18 @@ def main():
         mqtt_client.setup_mqtt_client()
         mqtt_client.subscribe(topic)
         mqtt_client.get_client().on_message = endurance_workout_object.read_remote_data
+        speed_topic = f'bike/{deviceId}/speed'
+        mqtt_client.subscribe(speed_topic)
+        mqtt_client.get_client().on_message = record_speed_data
 
         mqtt_client.get_client().loop_start()
 
         # Start the endurance
         # Start the endurance workout
+        target_distance = float(input("Enter the distance you want to travel (in kilometers): "))
         print("Starting the endurance workout...")
-        perform_endurance_workout(endurance_workout_object)
+        perform_endurance_workout(endurance_workout_object, target_distance)
+        print(f"Total distance covered: {calculate_distance_from_csv()} kilometers")
         print("Workout complete.")
 
     except KeyboardInterrupt:
