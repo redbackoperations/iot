@@ -50,7 +50,7 @@ class PicoBTInputHandler:
         
                         
 def main():
-    env_path = '/' #/home/pi/.env for lab pi
+    env_path = '/home/pi/.env'
     load_dotenv(env_path)
     pico_txrx_port = 1
     socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -82,6 +82,7 @@ def main():
                 else:
                     print("Invalid input received from pico remote")
                 time.sleep(0.5)
+                print(handler.resistance, handler.incline)
                 
         except KeyboardInterrupt:
             print("Closing connection")
