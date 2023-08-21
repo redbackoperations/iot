@@ -47,11 +47,11 @@ def user_input(threshold_object):
     threshold_object.set_duration(int(sys.argv[2]))
     print("Duration is set to " + str(sys.argv[2]) + " minutes")
 
-    # User input for rest
+    # Rest
     threshold_object.set_rest(int(sys.argv[3]))
     print("Rest is set to " + str(sys.argv[3]) + " seconds")
         
-    # user input for threshold power
+    # Threshold Power
     threshold_object.set_threshold_power(int(sys.argv[4]))
     print("Threshold power is set to " + str(sys.argv[4]) + " Watts")
     
