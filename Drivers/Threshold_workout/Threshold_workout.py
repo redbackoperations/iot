@@ -32,42 +32,29 @@ def perform_threshold_workout(threshold_object):
         exit()
 
 def user_input(threshold_object):
-    # User input for interval
-    interval = input('Enter amount of interval: ')
-    if interval == '':
-        print('No input given, defaulting to 3 interval')
-        threshold_object.set_interval(3)
-    else:
-        print('Interval is set to', interval, 'intervals')
-        threshold_object.set_interval(int(interval))
-        
-    # User input for duration
-    duration = input('Enter workout duration for each interval (in minutes): ')
-    if duration == '':
-        print('No input given, defaulting to 5 minutes')
-        threshold_object.set_duration(5)
-    else:
-        print('Duration is set to', duration, 'minutes')
-        threshold_object.set_duration(int(duration))
+    """
+    Example input: python Threshold_workout a b c d, where 
+    a -> interval
+    b -> duration
+    c -> rest
+    d -> threshold power
+    """
+    # Interval
+    threshold_object.set_interval(int(sys.argv[1]))
+    print("Interval is set to " + str(sys.argv[1]) + " intervals")
+    
+    # Duration
+    threshold_object.set_duration(int(sys.argv[2]))
+    print("Duration is set to " + str(sys.argv[2]) + " minutes")
 
     # User input for rest
-    rest = input('Enter rest duration between each intervals (in seconds): ')
-    if rest == '':
-        print('No input given, defaulting to 30 seconds')
-        threshold_object.set_rest(30)    
-    else:
-        print('Rest is set to', rest, 'seconds')
-        threshold_object.set_rest(int(rest))
+    threshold_object.set_rest(int(sys.argv[3]))
+    print("Rest is set to " + str(sys.argv[3]) + " seconds")
         
     # user input for threshold power
-    threshold_power = input('Enter threshold power (in Watts): ')
-    if threshold_power == '':
-        print('No input giver, defaulting to 200 Watts')
-        threshold_object.set_threshold_power(200)
-    else:
-        print('Threshold power is set to', threshold_power, 'Watts')
-        threshold_object.set_threshold_power(int(threshold_power))
-
+    threshold_object.set_threshold_power(int(sys.argv[4]))
+    print("Threshold power is set to " + str(sys.argv[4]) + " Watts")
+    
 def start_workout(threshold_object):
     
     # Start Threshold workout, looping for amount of interval
