@@ -1,6 +1,6 @@
 import bluetooth
 
-hc06_address = " 98:D3:51:FE:68:16"
+hc06_address = "98:D3:51:FE:68:16"
 port = 1
 
 print("Connecting to HC-06...")
@@ -20,6 +20,6 @@ try:
                 print("Receieved: " + line.strip())
 except KeyboardInterrupt:
     print("Closing socket")
-    
+
 sock.close()
 print("Done")
