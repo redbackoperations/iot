@@ -8,6 +8,7 @@ import json
 import time
 import platform
 
+
 # When a message is received from MQTT on the fan topic for this bike, it is received here
 def message(client, userdata, msg):
 	payload = msg.payload.decode("utf-8") #msg received is speed of the bike in m/s

@@ -4,7 +4,6 @@ import time
 import paho.mqtt.client as paho
 from paho import mqtt
 
-
 # this is a MQTT client that is able to publish to and subscribe from MQTT topics in HiveMQ Cloud
 class MQTTClient:
     def __init__(self, broker_address, username, password):
