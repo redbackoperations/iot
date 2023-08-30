@@ -169,13 +169,23 @@ def main():
     stop_button = ttk.Button(root, text="STOP", command=stop_training)
     stop_button.place(x=150, y=210)
 
-    setup_mqtt()  # Setup MQTT after creating the root window
-
     root.after(1000, update_values)  # Start the update loop
 
     root.mainloop()
-
-   # Initialize MQTT client and subscribe to power topic
+    try: 
+    # Load environment variables from pi's .env file
+    # This is necessary to get the MQTT credentials
+    # The .env file is not included in the repository
+        
+    #Instantiate FTP object and initialize duration to user set parameter
+        env_path = '/home/pi/.env'
+        load_dotenv(env_path)
+        ftp_object = FTP()
+        ftp_object.__init__()
+        global mqtt_client
+        global deviceId
+        set_workout_duration(ftp_object)
+    # Initialize MQTT client and subscribe to power topic
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
         deviceId = os.getenv('DEVICE_ID')
         topic = f'bike/{deviceId}/power'
@@ -186,7 +196,7 @@ def main():
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
         mqtt_client.get_client().loop_start()
 
-     except KeyboardInterrupt:
+    except KeyboardInterrupt:
         pass
     mqtt_client.get_client().loop_stop()
 
