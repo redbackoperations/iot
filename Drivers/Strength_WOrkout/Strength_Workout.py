@@ -5,11 +5,18 @@ import sys
 import csv
 import time
 import os
+import argparse
 from mqtt_client import MQTTClient
 from StrengthWorkout_class import StrengthWorkout
 from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
+
+parser = argparse.ArgumentParser(description="Run a strength workout.")
+parser.add_argument("-t", "--time", type=int, help="Workout time in minutes", default=20)
+parser.add_argument("-d", "--distance", type=float, help="Target distance in kilometers", required=True)
+parser.add_argument("-r", "--resistance", type=int, help="Initial resistance level", required=True)
+args = parser.parse_args()
 
 def perform_actions(resistence_level):
     mqtt_client.publish(f"bike/000001/resistance/control", resistence_level)
@@ -28,16 +35,6 @@ def record_speed_data(client, userdata, message):
 def perform_strength_workout(strength_workout_object, target_distance):
     print("Starting strength workout in 5 seconds...")
     time.sleep(5)
-
-    resistance_level = -1  # Initial value to enter the loop
-
-    while resistance_level < 0 or resistance_level > 100:
-        resistance_level = int(input("Enter the resistance percentage (0-100%): "))
-        
-        if resistance_level < 0 or resistance_level > 100:
-            print("Invalid resistance percentage. Please enter a value between 0 and 100.")
-
-
     start_time = time.time()    
     
     try:
@@ -126,9 +123,10 @@ def main():
         mqtt_client.get_client().on_message = record_speed_data
 
         # Start the strength workout
-        target_distance = float(input("Enter the distance you want to travel (in kilometers): "))
+        target_distance = args.distance
+        resistance_level = args.resistance
         print("Starting the strength workout...")
-        perform_strength_workout(strength_workout_object, target_distance)
+        perform_strength_workout(strength_workout_object, target_distance, resistance_level)
         print("Workout complete.")
         print(f"Total distance covered: {calculate_distance_from_csv()} kilometers")
 
