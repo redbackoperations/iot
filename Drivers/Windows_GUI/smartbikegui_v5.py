@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import time
+import json
 from mqtt_client import MQTTClient
 
 # Global variables for GUI
@@ -108,10 +109,37 @@ def countdown_timer():
     else:
         countdown_var.set("5:00")  # Reset the countdown display
 
+def update_speed_label(client, userdata, msg):
+    payload = msg.payload.decode('utf-8')
+    try:
+        dict_of_payload = json.loads(payload)
+        speed = dict_of_payload['value']
+        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        speed_var.set(speed)
+
+    except json.JSONDecodeError:
+        # treat it as a singular string value
+        speed_value = payload
 
 def main():
     global root, resistance_var, incline_var, speed_var, distance_var, resistance_entry, incline_entry, power_var, countdown_var
+    try: 
+        # Load environment variables from pi's .env file
+        # This is necessary to get the MQTT credentials
+      # The .env file is not included in the repository
+        global mqtt_client
+        global deviceId
+    # Initialize MQTT client and subscribe to speed topic
+        mqtt_client = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        topic = f'bike/000001/speed'
+        print(topic)
+        mqtt_client.setup_mqtt_client()
+        mqtt_client.subscribe(topic)
+        mqtt_client.get_client().on_message = update_speed_label
+        mqtt_client.get_client().loop_start()
 
+    except KeyboardInterrupt:
+        pass
     root = tk.Tk()
     root.title("Smart Indoor Bike Dashboard")
 
@@ -172,34 +200,8 @@ def main():
     root.after(1000, update_values)  # Start the update loop
 
     root.mainloop()
-    try: 
-    # Load environment variables from pi's .env file
-    # This is necessary to get the MQTT credentials
-    # The .env file is not included in the repository
-        
-    #Instantiate FTP object and initialize duration to user set parameter
-        env_path = '/home/pi/.env'
-        load_dotenv(env_path)
-        ftp_object = FTP()
-        ftp_object.__init__()
-        global mqtt_client
-        global deviceId
-        set_workout_duration(ftp_object)
-    # Initialize MQTT client and subscribe to power topic
-        mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
-        deviceId = os.getenv('DEVICE_ID')
-        topic = f'bike/{deviceId}/power'
-        print(deviceId)
-        print(topic)
-        mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(topic)
-        mqtt_client.get_client().on_message = ftp_object.read_remote_data
-        mqtt_client.get_client().loop_start()
-
-    except KeyboardInterrupt:
-        pass
+ 
     mqtt_client.get_client().loop_stop()
-
 if __name__ == "__main__":
     main()
 
