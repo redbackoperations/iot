@@ -12,6 +12,7 @@ speed_var = None
 distance_var = None
 power_var = None  # Declare power_var as a global variable
 countdown_var = None  # Declare countdown_var as a global variable
+heartbeat_rate_var = None
 
 # Global variables for simulation
 training_active = False
@@ -121,25 +122,77 @@ def update_speed_label(client, userdata, msg):
         # treat it as a singular string value
         speed_value = payload
 
+def update_power_label(client, userdata, msg):
+    payload = msg.payload.decode('utf-8')
+    try:
+        dict_of_payload = json.loads(payload)
+        power = dict_of_payload['value']
+        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        power_var.set(power)
+
+    except json.JSONDecodeError:
+        # treat it as a singular string value
+        power_value = payload
+
+def update_heartrate_label(client, userdata, msg):
+    payload = msg.payload.decode('utf-8')
+    try:
+        dict_of_payload = json.loads(payload)
+        heartbeat = dict_of_payload['value']
+        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        heartbeat_rate_var.set(heartbeat)
+
+    except json.JSONDecodeError:
+        # treat it as a singular string value
+        power_value = payload
+
 def main():
     global root, resistance_var, incline_var, speed_var, distance_var, resistance_entry, incline_entry, power_var, countdown_var
     try: 
-        # Load environment variables from pi's .env file
-        # This is necessary to get the MQTT credentials
-      # The .env file is not included in the repository
-        global mqtt_client
+        global mqtt_speed
         global deviceId
     # Initialize MQTT client and subscribe to speed topic
-        mqtt_client = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        mqtt_speed = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
         topic = f'bike/000001/speed'
         print(topic)
-        mqtt_client.setup_mqtt_client()
-        mqtt_client.subscribe(topic)
-        mqtt_client.get_client().on_message = update_speed_label
-        mqtt_client.get_client().loop_start()
+        mqtt_speed.setup_mqtt_client()
+        mqtt_speed.subscribe(topic)
+        mqtt_speed.get_client().on_message = update_speed_label
+        mqtt_speed.get_client().loop_start()
 
     except KeyboardInterrupt:
         pass
+    
+    try: 
+        global mqtt_power
+        global deviceId
+    # Initialize MQTT client and subscribe to power topic
+        mqtt_power = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        topic = f'bike/000001/power'
+        print(topic)
+        mqtt_power.setup_mqtt_client()
+        mqtt_power.subscribe(topic)
+        mqtt_power.get_client().on_message = update_power_label
+        mqtt_power.get_client().loop_start()
+
+    except KeyboardInterrupt:
+        pass
+
+    try: 
+        global mqtt_heartrate
+        global deviceId
+     # Initialize MQTT client and subscribe to Heartrate topic
+        mqtt_heartrate = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        topic = f'bike/000001/heartrate'
+        print(topic)
+        mqtt_heartrate.setup_mqtt_client()
+        mqtt_heartrate.subscribe(topic)
+        mqtt_heartrate.get_client().on_message = update_heartrate_label
+        mqtt_heartrate.get_client().loop_start()
+
+    except KeyboardInterrupt:
+        pass
+
     root = tk.Tk()
     root.title("Smart Indoor Bike Dashboard")
 
@@ -168,6 +221,13 @@ def main():
     incline_entry.place(x=170, y=70)
     incline_entry.bind("<Return>", on_incline_change)
 
+    # Power Label
+    power_label = tk.Label(root, text="Power:", font=("Helvetica", 16))
+    power_label.place(x=30, y=200)
+    power_var = tk.StringVar()
+    power_value_label = tk.Label(root, textvariable=power_var, font=("Helvetica", 16))
+    power_value_label.place(x=170, y=200)
+
     # Speed Label
     speed_label = tk.Label(root, text="Speed:", font=("Helvetica", 16))
     speed_label.place(x=30, y=120)
@@ -191,11 +251,19 @@ def main():
 
     # Start Button
     start_button = ttk.Button(root, text="START", command=start_training)
-    start_button.place(x=50, y=210)
+    start_button.place(x=50, y=350)
 
     # Stop Button
     stop_button = ttk.Button(root, text="STOP", command=stop_training)
-    stop_button.place(x=150, y=210)
+    stop_button.place(x=150, y=350)
+
+    # Heartbeat Rate Label and Entry
+    heartbeat_rate_label = tk.Label(root, text="Heartbeat Rate:", font=("Helvetica", 16))
+    heartbeat_rate_label.place(x=30, y=280)
+    heartbeat_rate_var = tk.StringVar()
+    heartbeat_rate_var.set(0)  # Default value for heartbeat rate as zero
+    heartbeat_rate_entry = ttk.Entry(root, textvariable=heartbeat_rate_var, font=("Helvetica", 16))
+    heartbeat_rate_entry.place(x=210, y=280)
 
     root.after(1000, update_values)  # Start the update loop
 
