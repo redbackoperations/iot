@@ -62,7 +62,7 @@ def receive_response(ip, port):
     return payload, clientaddress[0]
 
 
-# validate_response - Check wether the response is valid
+# validate_response - Check whether the response is valid
 # params - the payload to validate
 #        - the ip address of the server sending the response
 # returns True if the response is valid

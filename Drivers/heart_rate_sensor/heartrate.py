@@ -28,7 +28,7 @@ class AnyDevice(gatt.Device):
     # Called when the connection succeeds
     def connect_succeeded(self):
         super().connect_succeeded()
-        #print("[%s] Connected" % (self.mac_address))
+        print("[%s] Connected" % (self.mac_address))
 
 
     # Called when the connection fails
@@ -96,7 +96,7 @@ class AnyDevice(gatt.Device):
 
     # Receive a heart rate measurement and extract its information
     # The format depends on the flags set
-    #
+    #rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
     # Byte 0: Flags
     # Bit 0 - set if the heart rate is 16 bit (otherwise 8 bit)
     # Bit 1 - set if contact is detected (only valid if bit 2 is also set)
