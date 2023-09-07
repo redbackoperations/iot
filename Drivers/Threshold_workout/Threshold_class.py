@@ -44,17 +44,25 @@ class ThresholdWorkout:
         if self.current_power > self.threshold_power:
             print('Threshold power exceeded!')
     
-    # Future improvement - calculate distance travelled
+    # Calculate distance travelled
     def calculate_distance(self):
         # formula - distance(m) = speed(m/s)*time(second)
-        pass
+        speed = sum(self.speed_data) / len(self.speed_data)
+        time = (self.duration * self.interval) * 60
+        dist = speed * time
+        
+        self.distance = str(round(dist/1000, 2))
     def get_distance(self):
         return self.distance
     
-    # Future improvement - calculate calories burned
+    # Calculate calories burnt
     def calculate_calories(self):
         # formula - Cal(kcal) = avg_power(Watts)*time(hour)*3.6
-        pass
+        avg_power = sum(self.power_data) / len(self.power_data)
+        time = (self.duration * self.interval) / 60
+        Cal = avg_power * time * 3.6
+        
+        self.calories = str(round(Cal, 2))
     def get_calories(self):
         return self.calories
     
@@ -66,6 +74,8 @@ class ThresholdWorkout:
     # Receive message
     def read_message(self, client, userdata, msg):
         deviceId = os.getenv('DEVICE_ID')
+        
+        # Get power data from MQTT
         if msg.topic == f'bike/{deviceId}/power':
             power_payload = msg.payload.decode('utf-8')
             dict_of_power_payload = json.loads(power_payload)
@@ -73,11 +83,14 @@ class ThresholdWorkout:
             # print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
             self.current_power = power_value
             self.check_threshold()
-        # elif msg.topic == f'bike/{deviceId}/speed':
-        #     speed_payload = msg.payload.decode('utf-8')
-        #     dict_of_speed_payload = json.loads(speed_payload)
-        #     speed_value = dict_of_speed_payload["value"]
-        #     print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-        #     self.current_speed = speed_value
-        #     self.speed_data.append(speed_value)
+            self.power_data.append(power_value)
+            
+        # Get speed data from MQTT
+        if msg.topic == f'bike/{deviceId}/speed':
+            speed_payload = msg.payload.decode('utf-8')
+            dict_of_speed_payload = json.loads(speed_payload)
+            speed_value = dict_of_speed_payload["value"]
+            # print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+            self.current_speed = speed_value
+            self.speed_data.append(speed_value)
             
