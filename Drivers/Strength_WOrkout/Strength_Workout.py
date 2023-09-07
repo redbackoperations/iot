@@ -2,36 +2,50 @@
 #! bin/bash
 #! bin/sh
 import sys
+import csv
 import time
 import os
+import argparse
 from mqtt_client import MQTTClient
 from StrengthWorkout_class import StrengthWorkout
 from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
 
+parser = argparse.ArgumentParser(description="Run a strength workout.")
+parser.add_argument("-t", "--time", type=int, help="Workout time in minutes", default=20)
+parser.add_argument("-d", "--distance", type=float, help="Target distance in kilometers", required=True)
+parser.add_argument("-r", "--resistance", type=int, help="Initial resistance level", required=True)
+args = parser.parse_args()
+
 def perform_actions(resistence_level):
     mqtt_client.publish(f"bike/000001/resistance/control", resistence_level)
 
 
-def perform_strength_workout(strength_workout_object):
+# Global Variables
+speed_data_file = 'speed_data.csv'
+
+def record_speed_data(client, userdata, message):
+    """Callback function to handle incoming speed data and write to a CSV."""
+    with open(speed_data_file, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([time.time(), message.payload.decode()])  # write current time and speed value
+
+
+def perform_strength_workout(strength_workout_object, target_distance):
     print("Starting strength workout in 5 seconds...")
     time.sleep(5)
-
-    resistance_level = -1  # Initial value to enter the loop
-
-    while resistance_level < 0 or resistance_level > 100:
-        resistance_level = int(input("Enter the resistance percentage (0-100%): "))
-        
-        if resistance_level < 0 or resistance_level > 100:
-            print("Invalid resistance percentage. Please enter a value between 0 and 100.")
-
-
     start_time = time.time()    
     
     try:
         while True:
             current_time = time.time() - start_time
+            distance_covered = calculate_distance_from_csv()
+            
+            if distance_covered >= target_distance:
+                print(f"Target distance of {target_distance} km reached!")
+                break
+            
             if current_time >= (strength_workout_object.duration * 60) or current_time >= (MAX_WORKOUT_DURATION * 60):
                 break
 
@@ -63,6 +77,21 @@ def set_workout_duration(strength_workout_object):
         strength_workout_object.duration = 20
         print("Duration not specified, defaulting to 20 minutes")
 
+def calculate_distance_from_csv():
+    last_time = None
+    distance = 0.0  # in kilometers or the unit of speed
+
+    with open(speed_data_file, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            current_time, speed = float(row[0]), float(row[1])  # Extract time and speed
+            if last_time:  # Skip the first row
+                time_difference = current_time - last_time  # Time difference in seconds
+                distance += (speed * (time_difference / 3600))  # speed * time (converted to hours)
+            last_time = current_time
+
+    return distance
+
 def main():
     try:
         # Load environment variables from the .env file
@@ -89,11 +118,17 @@ def main():
         mqtt_client.get_client().on_message = strength_workout_object.read_remote_data
 
         mqtt_client.get_client().loop_start()
+        speed_topic = f'bike/{deviceId}/speed'
+        mqtt_client.subscribe(speed_topic)
+        mqtt_client.get_client().on_message = record_speed_data
 
         # Start the strength workout
+        target_distance = args.distance
+        resistance_level = args.resistance
         print("Starting the strength workout...")
-        perform_strength_workout(strength_workout_object)
+        perform_strength_workout(strength_workout_object, target_distance, resistance_level)
         print("Workout complete.")
+        print(f"Total distance covered: {calculate_distance_from_csv()} kilometers")
 
     except KeyboardInterrupt:
         pass
