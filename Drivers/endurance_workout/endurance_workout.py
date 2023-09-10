@@ -9,10 +9,18 @@ from EnduranceWorkout_class import EnduranceWorkout
 from dotenv import load_dotenv, set_key
 
 MAX_WORKOUT_DURATION = 20  # Maximum duration of the workout in minutes
-speed_data_file = 'speed_data.csv'
+
+parser = argparse.ArgumentParser(description="Run an endurance workout.")
+parser.add_argument("-t", "--time", type=int, help="Workout time in minutes", default=20)
+parser.add_argument("-d", "--distance", type=float, help="Target distance in kilometers", required=True)
+parser.add_argument("-r", "--resistance", type=int, help="Initial incline level", required=True)
+args = parser.parse_args()
 
 def perform_actions(incline_level):
     mqtt_client.publish(f"bike/000001/incline/control", incline_level)
+
+# Global Variables
+speed_data_file = 'speed_data.csv'
 
 def record_speed_data(client, userdata, message):
     """Callback function to handle incoming speed data and write to a CSV."""
@@ -126,6 +134,7 @@ def main():
         # Start the endurance
         # Start the endurance workout
         target_distance = float(input("Enter the distance you want to travel (in kilometers): "))
+        incline_level = args.incline        
         print("Starting the endurance workout...")
         perform_endurance_workout(endurance_workout_object, target_distance)
         print(f"Total distance covered: {calculate_distance_from_csv()} kilometers")
