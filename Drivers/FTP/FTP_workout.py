@@ -7,14 +7,23 @@ import os
 from mqtt_client import MQTTClient
 from FTP_class import FTP
 from dotenv import load_dotenv, set_key
+import argparse
 
-def perform_ftp_test(ftp_object):
+parser = argparse.ArgumentParser(description="Run a FTP workout.")
+parser.add_argument("-r", "--resistance", type=int, help="Initial resistance level", required=True)
+parser.add_argument("-t", "--time", type=int, help="Duration of the FTP test in minutes", default=20)
+args = parser.parse_args()
+
+
+def perform_ftp_test(ftp_object, resistence_level):
     ## Reads previously saved FTP value from the .env file
     print("Current FTP: ", ftp_object.get_ftp())
     print("Starting FTP test in 5 seconds...")
     time.sleep(5)
     
     start_time = time.time()
+    ## Starts with the specified resistence level
+    mqtt_client.publish(f"bike/000001/resistance/control", resistence_level)
     try:
         #NOTE: adding a value in the command line will set the duration of the test in minutes
         while time.time() - start_time < (ftp_object.duration*60):
@@ -33,15 +42,10 @@ def perform_ftp_test(ftp_object):
         print("Count of data points given: " + str(len(ftp_object.power_data)))
         pass
 
-def set_workout_duration(ftp_object) -> FTP:
-    # reads command line arg for setting duration of workout
-    if len(sys.argv) > 1:
-        ftp_object.duration = int(sys.argv[1])
-        print("Duration set to " + str(sys.argv[1]) + " minutes")
-    else:
-        # default duration is 20 minutes (no argument given)
-        ftp_object.duration = 20
-        print("Duration not specified, defaulting to 20 minutes")
+def set_workout_duration(ftp_object, duration) -> None:
+    ftp_object.duration = duration
+    print(f"Duration set to {duration} minutes")
+
     
 def main():
     try:
@@ -56,7 +60,7 @@ def main():
         ftp_object.__init__()
         global mqtt_client
         global deviceId
-        set_workout_duration(ftp_object)
+        set_workout_duration(ftp_object, args.time)
         
         # Initialize MQTT client and subscribe to power topic
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
@@ -68,10 +72,18 @@ def main():
         mqtt_client.subscribe(topic)
         mqtt_client.get_client().on_message = ftp_object.read_remote_data
         mqtt_client.get_client().loop_start()
+
+        resistence_topic = f'bike/{deviceId}/resistance'
+        print(deviceId)
+        print(resistence_topic)
+        mqtt_client.setup_mqtt_client()
+        mqtt_client.subscribe(resistence_topic)
+        mqtt_client.get_client().on_message = ftp_object.read_remote_data
         
         # Start FTP test
         print("Starting the FTP test...")
-        perform_ftp_test(ftp_object)
+        resistance_level = args.resistance
+        perform_ftp_test(ftp_object, resistance_level)
         ftp_object.calculate_ftp()
         result = ftp_object.get_ftp()
         print(f"Your estimated FTP is: {result:.2f} watts")
