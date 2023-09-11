@@ -19,8 +19,11 @@ class CycleWorkout
 
         int timeInSeconds = timeInMinutes * 60; // Convert minutes to seconds
 
-        Console.Write("Enter the distance in kilometers: ");
-        double distance = double.Parse(Console.ReadLine());
+        Console.Write("Enter your average speed in km/h: ");
+        double speed = double.Parse(Console.ReadLine());
+
+        // Calculate distance
+        double distance = (speed / 60) * timeInMinutes; // Convert speed from km/h to km/min
 
         Console.Write("Enter your weight in kilograms: ");
         double weight = double.Parse(Console.ReadLine());
@@ -51,4 +54,3 @@ class CycleWorkout
         Console.WriteLine("\nThank you for using the Cycle Endurance Workout program!");
     }
 }
-
