@@ -44,6 +44,9 @@ class WahooDevice(gatt.Device):
 
         # CLI parser arguments
         self.args = args
+        
+        # Zero count
+        self.zero_count = 0
 
         # setup MQTT connection
         self.setup_mqtt_connection()
@@ -309,13 +312,30 @@ class WahooDevice(gatt.Device):
 
         # The KICKR Trainer only reports instantaneous speed, cadence and power
         # Publish them to MQTT topics if they were provided
-        if flag_instantaneous_speed:
-            self.mqtt_client.publish(self.args.speed_report_topic, self.mqtt_data_report_payload('speed', self.instantaneous_speed))
-        if flag_instantaneous_cadence:
-            self.mqtt_client.publish(self.args.cadence_report_topic, self.mqtt_data_report_payload('cadence', self.instantaneous_cadence))
-        if flag_instantaneous_power:
-            self.mqtt_client.publish(self.args.power_report_topic, self.mqtt_data_report_payload('power', self.instantaneous_power))
-
+        if self.zero_count < 10:
+            if flag_instantaneous_speed:
+                self.mqtt_client.publish(self.args.speed_report_topic, self.mqtt_data_report_payload('speed', self.instantaneous_speed))
+            if flag_instantaneous_cadence:
+                self.mqtt_client.publish(self.args.cadence_report_topic, self.mqtt_data_report_payload('cadence', self.instantaneous_cadence))
+            if flag_instantaneous_power:
+                self.mqtt_client.publish(self.args.power_report_topic, self.mqtt_data_report_payload('power', self.instantaneous_power))
+                
+            if self.instantaneous_speed == 0:
+                self.zero_count += 1
+                
+            print('Zero Count:', self.zero_count)
+                
+        elif self.zero_count >= 10 and self.instantaneous_speed > 0:
+            self.zero_count = 0
+            if flag_instantaneous_speed:
+                self.mqtt_client.publish(self.args.speed_report_topic, self.mqtt_data_report_payload('speed', self.instantaneous_speed))
+            if flag_instantaneous_cadence:
+                self.mqtt_client.publish(self.args.cadence_report_topic, self.mqtt_data_report_payload('cadence', self.instantaneous_cadence))
+            if flag_instantaneous_power:
+                self.mqtt_client.publish(self.args.power_report_topic, self.mqtt_data_report_payload('power', self.instantaneous_power))
+        else:
+            print('Bike currently idle, no data publish to MQTT')
+            
     def mqtt_data_report_payload(self, device_type, value):
         # TODO: add more json data payload whenever needed later
         return json.dumps({"value": value, "unitName": DEVICE_UNIT_NAMES[device_type], "timestamp": time.time(), "metadata": { "deviceName": platform.node() } })
