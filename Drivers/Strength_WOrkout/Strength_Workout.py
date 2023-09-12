@@ -5,6 +5,7 @@ import sys
 import csv
 import time
 import os
+import json
 import argparse
 from mqtt_client import MQTTClient
 from StrengthWorkout_class import StrengthWorkout
@@ -29,10 +30,13 @@ def record_speed_data(client, userdata, message):
     """Callback function to handle incoming speed data and write to a CSV."""
     with open(speed_data_file, 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow([time.time(), message.payload.decode()])  # write current time and speed value
+        payload = message.payload.decode("utf-8")
+        dict_of_payload = json.loads(payload)
+        speed = dict_of_payload["value"]
+        writer.writerow([time.time(), speed])  # write current time and speed value
 
 
-def perform_strength_workout(strength_workout_object, target_distance):
+def perform_strength_workout(strength_workout_object, target_distance, resistance_level):
     print("Starting strength workout in 5 seconds...")
     time.sleep(5)
     start_time = time.time()    
@@ -55,7 +59,7 @@ def perform_strength_workout(strength_workout_object, target_distance):
             # Perform the strength workout action based on the resistance level
             perform_actions(resistance_level)
 
-            if current_time % 120 == 0 and resistance_level < 100:
+            if current_time % 120 == 0 and resistance_level < 96:
                 resistance_level += 5
 
             time.sleep(1)
@@ -64,18 +68,6 @@ def perform_strength_workout(strength_workout_object, target_distance):
         print("Workout stopped")
         print("Count of data points given: " + str(len(strength_workout_object.resistance_data)))
 
-def set_workout_duration(strength_workout_object):
-    # Read the command line argument for setting the duration of the workout
-    if len(sys.argv) > 1:
-        strength_workout_object.duration = int(sys.argv[1])
-        if strength_workout_object.duration > MAX_WORKOUT_DURATION:
-            strength_workout_object.duration = MAX_WORKOUT_DURATION
-            print("Duration exceeds maximum limit of 20 minutes. Setting duration to 20 minutes.")
-        print("Duration set to " + str(strength_workout_object.duration) + " minutes")
-    else:
-        # Default duration is 20 minutes (no argument given)
-        strength_workout_object.duration = 20
-        print("Duration not specified, defaulting to 20 minutes")
 
 def calculate_distance_from_csv():
     last_time = None
@@ -105,7 +97,6 @@ def main():
         global mqtt_client
         global deviceId
 
-        set_workout_duration(strength_workout_object)
 
         # Initialize MQTT client and subscribe to resistance topic
         mqtt_client = MQTTClient(os.getenv('MQTT_HOSTNAME'), os.getenv('MQTT_USERNAME'), os.getenv('MQTT_PASSWORD'))
@@ -125,6 +116,7 @@ def main():
         # Start the strength workout
         target_distance = args.distance
         resistance_level = args.resistance
+        strength_workout_object.duration = args.time
         print("Starting the strength workout...")
         perform_strength_workout(strength_workout_object, target_distance, resistance_level)
         print("Workout complete.")
