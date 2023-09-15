@@ -20,39 +20,6 @@ countdown_active = False
 start_time = 0
 distance_traveled = 0
 
-def update_values():
-    global start_time, distance_traveled
-
-    if training_active:
-        # Get the current time
-        current_time = time.time()
-
-        # Calculate elapsed time since the user started pedaling
-        elapsed_time = current_time - start_time
-
-        # Simulate speed based on resistance and incline levels (replace with actual logic)
-        resistance = int(resistance_var.get())
-        incline = int(incline_var.get())
-        speed = resistance + incline  # This is just a simple example, adjust as needed
-
-        # Calculate distance traveled based on speed and elapsed time
-        distance_traveled = speed * elapsed_time / 3600  # Convert seconds to hours
-
-        # Calculate power using speed and resistance
-        power = calculate_power(speed, resistance)
-
-        # Update GUI with calculated values
-        speed_var.set(f"{speed} km/h")
-        distance_var.set(f"{distance_traveled:.2f} km")
-        power_var.set(f"{power:.2f} Watts")  # Update power value
-
-        # Publish current resistance and incline values to MQTT topics
-        mqtt_client.publish("topic/resistance", resistance)
-        mqtt_client.publish("topic/incline", incline)
-
-    # Schedule the next update after a delay (in milliseconds)
-    root.after(1000, update_values)
-
 def on_resistance_change(event):
     # Update resistance value from user input
     try:
@@ -85,7 +52,6 @@ def start_training():
         start_time = time.time()  # Record the start time of pedaling
         distance_traveled = 0  # Reset distance traveled
         countdown_timer()
-        update_values()
 
 def stop_training():
     global training_active, countdown_active, start_time, distance_traveled
@@ -93,8 +59,8 @@ def stop_training():
         training_active = False
         countdown_active = False
         start_time = 0  # Reset the start time
-        distance_traveled = 0  # Reset distance traveled
-        speed_var.set("0 km/h")  # Reset speed display
+        distance_traveled = 0  # Display Distance Traveled
+        speed_var.set("0 m/s")  # Reset speed display
         distance_var.set("0.00 km")  # Reset distance display
         countdown_var.set("5:00")  # Reset the countdown display
 
@@ -110,85 +76,65 @@ def countdown_timer():
     else:
         countdown_var.set("5:00")  # Reset the countdown display
 
-def update_speed_label(client, userdata, msg):
-    payload = msg.payload.decode('utf-8')
-    try:
-        dict_of_payload = json.loads(payload)
-        speed = dict_of_payload['value']
+def read_message(client, userdata, msg):
+    # Get power data from MQTT
+    print("message received")
+    print(msg.payload)
+    if msg.topic == f'bike/000001/power':
+        power_payload = msg.payload.decode('utf-8')
+        dict_of_power_payload = json.loads(power_payload)
+        power = dict_of_power_payload['value']
         print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-        speed_var.set(speed)
-
-    except json.JSONDecodeError:
-        # treat it as a singular string value
-        speed_value = payload
-
-def update_power_label(client, userdata, msg):
-    payload = msg.payload.decode('utf-8')
-    try:
-        dict_of_payload = json.loads(payload)
-        power = dict_of_payload['value']
+        power_var.set(f"{power} Watts")
+        
+    # Get speed data from MQTT
+    if msg.topic == f'bike/000001/speed':
+        speed_payload = msg.payload.decode('utf-8')
+        dict_of_speed_payload = json.loads(speed_payload)
+        speed = dict_of_speed_payload["value"]
         print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-        power_var.set(power)
+        calculate_distance(speed)
+        speed = str(round(speed, 2))
+        speed_var.set(f"{speed} m/s")
 
-    except json.JSONDecodeError:
-        # treat it as a singular string value
-        power_value = payload
+    # # Get Heartrate Data from MQTT
+    # if msg.topic == f'bike/000001/heartrate':
+    #     heart_payload = msg.payload.decode('utf-8')
+    #     dict_of_heart_payload = json.loads(heart_payload)
+    #     heart = dict_of_heart_payload["value"]
+    #     print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    #     heartbeat_rate_var.set(f"{heart} BPM")
 
-def update_heartrate_label(client, userdata, msg):
-    payload = msg.payload.decode('utf-8')
-    try:
-        dict_of_payload = json.loads(payload)
-        heartbeat = dict_of_payload['value']
-        print("Received " + msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-        heartbeat_rate_var.set(heartbeat)
+def calculate_distance(speed):
+    global start_time, distance_traveled
 
-    except json.JSONDecodeError:
-        # treat it as a singular string value
-        power_value = payload
+    current_time = time.time()
+    elapsed_time = current_time - start_time
+    # Calculate distance traveled based on speed and elapsed time
+    distance_traveled += speed * elapsed_time / 3600 / 1000
+    dist = str(round(distance_traveled, 2))
+    distance_var.set(f"{dist} km")
+
 
 def main():
     global root, resistance_var, incline_var, speed_var, distance_var, resistance_entry, incline_entry, power_var, countdown_var
     try: 
-        global mqtt_speed
+        global mqtt_client
         global deviceId
     # Initialize MQTT client and subscribe to speed topic
-        mqtt_speed = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
-        topic = f'bike/000001/speed'
-        print(topic)
-        mqtt_speed.setup_mqtt_client()
-        mqtt_speed.subscribe(topic)
-        mqtt_speed.get_client().on_message = update_speed_label
-        mqtt_speed.get_client().loop_start()
-
-    except KeyboardInterrupt:
-        pass
-    
-    try: 
-        global mqtt_power
-        global deviceId
-    # Initialize MQTT client and subscribe to power topic
-        mqtt_power = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
-        topic = f'bike/000001/power'
-        print(topic)
-        mqtt_power.setup_mqtt_client()
-        mqtt_power.subscribe(topic)
-        mqtt_power.get_client().on_message = update_power_label
-        mqtt_power.get_client().loop_start()
-
-    except KeyboardInterrupt:
-        pass
-
-    try: 
-        global mqtt_heartrate
-        global deviceId
-     # Initialize MQTT client and subscribe to Heartrate topic
-        mqtt_heartrate = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
-        topic = f'bike/000001/heartrate'
-        print(topic)
-        mqtt_heartrate.setup_mqtt_client()
-        mqtt_heartrate.subscribe(topic)
-        mqtt_heartrate.get_client().on_message = update_heartrate_label
-        mqtt_heartrate.get_client().loop_start()
+        mqtt_client = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        topic1 = f'bike/000001/speed'
+        topic2 = f'bike/000001/power'
+        topic3 = f'bike/000001/heartrate'
+        mqtt_client.setup_mqtt_client()
+        print(topic1)
+        print(topic2)
+        print(topic3)
+        mqtt_client.subscribe(topic1)
+        mqtt_client.subscribe(topic2)
+        mqtt_client.subscribe(topic3)
+        mqtt_client.get_client().on_message = read_message
+        mqtt_client.get_client().loop_start()
 
     except KeyboardInterrupt:
         pass
@@ -265,7 +211,7 @@ def main():
     heartbeat_rate_entry = ttk.Entry(root, textvariable=heartbeat_rate_var, font=("Helvetica", 16))
     heartbeat_rate_entry.place(x=210, y=280)
 
-    root.after(1000, update_values)  # Start the update loop
+    # root.after(1000, update_values)  # Start the update loop
 
     root.mainloop()
  
