@@ -90,6 +90,17 @@ function TopBar() {
                   </ListItemButton>
                 </MenuItem>
               </Link>
+              <Link to="workouts" className="button-link" onClick={handleClose}>
+                <MenuItem key={'workouts'}>
+                  <ListItemButton sx={{ p: 0 }}>
+                    <ListItemIcon>
+                      <DataObjectIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Workouts'} />
+                  </ListItemButton>
+                </MenuItem>
+              </Link>
+
               <Link to="/device-data" className="button-link" onClick={handleClose}>
                 <MenuItem key={'device-data'}>
                   <ListItemButton sx={{ p: 0 }}>
@@ -100,6 +111,7 @@ function TopBar() {
                   </ListItemButton>
                 </MenuItem>
               </Link>
+
             </Menu>
             <Typography variant="h6" noWrap component="div">
               Redback Operations / IoT CMS

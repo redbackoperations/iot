@@ -63,3 +63,13 @@ label.testing-data-toggle-label {
     transform: rotate(360deg);
   }
 }
+
+.css-12i7wg6-MuiPaper-root-MuiDrawer-paper {
+  background-color: #2315bb !important; /* Dark Purple */
+}
+
+
+.MuiListItem-root.Mui-selected {
+  background-color: orange;
+  /* Add other styles as needed */
+}

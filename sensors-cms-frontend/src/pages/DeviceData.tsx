@@ -95,7 +95,8 @@ function DeviceData() {
         resultsCount={deviceData?.length}
         queryData={qs.parse(location.search, { ignoreQueryPrefix: true })}
       />
-      {loading ? (
+      /*
+      {loading ? ( 
         <TableLoadingSkeletons />
       ) : deviceData && deviceData.length > 0 ? (
         <TableContainer component={Paper}>
