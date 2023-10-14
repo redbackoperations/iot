@@ -19,7 +19,7 @@ import mqttClient from '../lib/mqttClient'
 import { isJson } from '../lib/jsonHelper'
 
 // a counter to limit the refresh rate
-let dataRefreshCounter = 1
+let dataRefreshCounter = 0
 const dataRefreshRate = process.env.REACT_APP_FETCH_DATA_RATE || 30
 
 function Dashboard() {
