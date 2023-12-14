@@ -11,8 +11,15 @@ import Devices from './pages/Devices'
 import DeviceData from './pages/DeviceData'
 import TopBar from './components/TopBar'
 import SideBar from './components/SideBar'
+import StrengthWorkoutPage from './pages/Strength'
+import EnduranceWorkoutPage from './pages/Endurance'
 
 import './App.css'
+
+import UsersPage from './pages/Users'
+import WorkoutPage from './pages/workouts'
+import ThresholdWorkoutPage from './pages/Threshold'
+
 
 function App() {
   return (
@@ -45,6 +52,11 @@ function App() {
           <Route path="devices/new" element={<UpsertDevice />} />
           <Route path="devices/:id/edit" element={<UpsertDevice />} />
           <Route path="device-data" element={<DeviceData />} />
+          <Route path='/workouts' element={<WorkoutPage/>} />
+          <Route path='Users' element={<UsersPage/>} />
+          <Route path='strength' element={<StrengthWorkoutPage/>} />
+          <Route path='threshold' element={<ThresholdWorkoutPage/>} />
+          <Route path='endurance' element={<EnduranceWorkoutPage/>} />
         </Routes>
       </Box>
     </Box>

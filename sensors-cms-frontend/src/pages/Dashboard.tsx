@@ -99,8 +99,8 @@ function Dashboard() {
       const jsonData = isJson(msg)
       dataRefreshCounter += 1
 
-      if (dataRefreshCounter >= dataRefreshRate) {
-        dataRefreshCounter = 0
+      if (dataRefreshCounter === dataRefreshRate) {
+        dataRefreshCounter = 1
 
         // only re-fetching data when the payload including expected json format
         if (
@@ -118,7 +118,8 @@ function Dashboard() {
           )
         }
       }
-    })
+    }
+    )
 
     client.subscribe(process.env.REACT_APP_MQTT_TOPIC_TO_REFRESH_WEB_PAGE as string)
 
@@ -146,7 +147,7 @@ function Dashboard() {
               boxShadow: 'none',
             }}
             loading={totalCountloading}
-            // description="number of bikes"
+             description="number of bikes"
           />
         </Grid>
         <Grid item xs={12} md={4} lg={4}>
@@ -162,7 +163,7 @@ function Dashboard() {
               boxShadow: 'none',
             }}
             loading={totalCountloading}
-            // description="number of sensors/devices"
+             description="number of sensors/devices"
           />
         </Grid>
         <Grid item xs={12} md={4} lg={4}>
@@ -178,7 +179,7 @@ function Dashboard() {
               boxShadow: 'none',
             }}
             loading={totalCountloading}
-            // description="number of sensors/devices data"
+             description="number of sensors/devices data"
           />
         </Grid>
         <Grid item xs={12} md={3} lg={3}>
