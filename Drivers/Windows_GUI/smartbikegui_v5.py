@@ -4,6 +4,14 @@ from PIL import Image, ImageTk
 import time
 import json
 from mqtt_client import MQTTClient
+import warning
+
+# Put MQTT credentials below - temp fix to hardcoded credentials on repo
+warning.warn('Set MQTT credentials explicitly in Drivers/Windows_GUI/smartbikegui_v5.py')
+MQTT_HOST = ''
+MQTT_USER = ''
+MQTT_PASS = ''
+raise ValueError('Need to define MQTT credentials')
 
 # Global variables for GUI
 resistance_var = None
@@ -148,7 +156,7 @@ def main():
         global mqtt_client
         global deviceId
     # Initialize MQTT client and subscribe to speed topic
-        mqtt_client = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+        mqtt_client = MQTTClient((MQTT_HOST), (MQTT_USER), (MQTT_PASS))
         topic1 = f'bike/000001/speed'
         topic2 = f'bike/000001/power'
         topic3 = f'bike/000001/heartrate'
