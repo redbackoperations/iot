@@ -234,7 +234,7 @@ def main():
 		global manager
 		manager = AnyDeviceManager(adapter_name=adapter_name)
 		manager.prefix=alias_prefix
-		manager.start_discovery()
+		#manager.start_discovery()
 		manager.run()
 	except KeyboardInterrupt:
 		pass
