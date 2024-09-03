@@ -1,0 +1,62 @@
+#!/usr/bin/expect -f
+
+# get KICKR address from environment file
+set fh [exec cat ~/.env]
+regexp {(?:KICKR_MAC_ADDRESS=\")(.*?)(?=\")} $fh _ KICKR_MAC_ADDRESS
+
+# set target MAC address
+set TARGET_ADDRESS $KICKR_MAC_ADDRESS
+
+# attempt to connect to target
+set timeout -1
+set prompt "#"
+set connection_established 0
+
+spawn bluetoothctl
+
+# request and wait for default agent
+expect -re $prompt
+send "default-agent\r"
+
+expect -re "Default agent request successful"
+
+# TODO: expand to scan, trust and pair
+
+# Attempt to connect to the device
+expect -re $prompt
+send "connect $TARGET_ADDRESS\r"
+while {$connection_established != 1} {
+    expect {
+        # end loop on successful connect
+        -re "Connection successful" {
+            set connection_established 1
+        }
+        # retry connect if failed
+        -re "Connected: no" {
+            # Retry connecting if it fails
+            expect -re $prompt
+            send "connect $TARGET_ADDRESS\r"
+        }
+        # if hit device not available - scan to discover the device and continue
+        -re "not available" {
+
+            # ensure the device is not already known
+            expect -re $prompt
+            send "remove $TARGET_ADDRESS\r"
+
+            # rediscover the device by scanning
+            expect -re $prompt
+            send "discoverable on\r"
+            expect -re $prompt
+            send "scan on\r"
+            expect -re "(?i)$TARGET_ADDRESS"
+            send "scan off\r"
+        }
+    }
+}
+
+# Exit bluetoothctl
+expect -re $prompt
+send "exit\r"
+
+expect eof
