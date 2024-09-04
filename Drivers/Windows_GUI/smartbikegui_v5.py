@@ -4,6 +4,21 @@ from PIL import Image, ImageTk
 import time
 import json
 from mqtt_client import MQTTClient
+import warnings
+import os
+
+# set this file's folder as the current working directory so you can use it while having the rest of the repo open
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# set MQTT credentials manually - DO NOT push credentials to repo
+# TODO: create a file for the whole repo to reference for credentials
+MQTT_HOST = ''
+MQTT_USER = ''
+MQTT_PASS = ''
+if MQTT_HOST == '' or MQTT_USER == '' or MQTT_PASS == '':
+    raise ValueError('Explicitly set MQTT credentials in iot/Drivers/Windows_GUI/smartbikegui_v5.py')
+else:
+    warnings.warn('Reminder: Do not push credentials to repo - remove credentials from iot/Drivers/Windows_GUI/smartbikegui_v5.py before push')
 
 # Global variables for GUI
 resistance_var = None
@@ -147,8 +162,10 @@ def main():
     try: 
         global mqtt_client
         global deviceId
-    # Initialize MQTT client and subscribe to speed topic
-        mqtt_client = MQTTClient(('f5b2a345ee944354b5bf1263284d879e.s1.eu.hivemq.cloud'), ('redbackiotclient'), ('IoTClient@123'))
+
+        # Initialize MQTT client and subscribe to speed topic
+        mqtt_client = MQTTClient((MQTT_HOST), (MQTT_USER), (MQTT_PASS))
+
         topic1 = f'bike/000001/speed'
         topic2 = f'bike/000001/power'
         topic3 = f'bike/000001/heartrate'
@@ -186,7 +203,7 @@ def main():
 
     # Background Image
     bg_image = Image.open("cycling_background_v2.jpg")
-    bg_image = bg_image.resize((screen_width, screen_height), Image.ANTIALIAS)
+    bg_image = bg_image.resize((screen_width, screen_height), Image.LANCZOS)
     bg_photo = ImageTk.PhotoImage(bg_image)
     bg_label = tk.Label(root, image=bg_photo)
     bg_label.place(x=0, y=0)
