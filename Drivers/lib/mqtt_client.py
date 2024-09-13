@@ -3,13 +3,30 @@
 import time
 import paho.mqtt.client as paho
 from paho import mqtt
+import logging
+
+# setup logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+logger_formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
+
+logger_file_handler = logging.FileHandler('mqtt.log') # TODO: setup a logging folder and write all logging files to that folder
+logger_file_handler.setFormatter(logger_formatter)
+
+logger_stream_handler = logging.StreamHandler() # this will print all logs to the terminal also
+
+logger.addHandler(logger_file_handler)
+logger.addHandler(logger_stream_handler)
 
 # this is a MQTT client that is able to publish to and subscribe from MQTT topics in HiveMQ Cloud
 class MQTTClient:
-    def __init__(self, broker_address, username, password):
+    def __init__(self, broker_address, username, password, port=1883):
         self.broker_address = broker_address
         self.username = username
         self.password = password
+        self.port = port
         self.client = None
 
     def get_client(self):
@@ -23,11 +40,11 @@ class MQTTClient:
         self.client.on_connect = self.on_connect
 
         # enable TLS for secure connection
-        self.client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+        self.client.tls_set(tls_version=paho.ssl.PROTOCOL_TLS)
         # set username and password
         self.client.username_pw_set(self.username, self.password)
         # connect to HiveMQ Cloud on port 8883 (default for MQTT)
-        self.client.connect(self.broker_address, 8883)
+        self.client.connect(self.broker_address, self.port)
 
         # setting callbacks, use separate functions like above for better visibility
         self.client.on_subscribe = self.on_subscribe
@@ -54,19 +71,19 @@ class MQTTClient:
 
     # setting callbacks for different events to see if it works, print the message etc.
     def on_connect(self, client, userdata, flags, rc, properties=None):
-        print("CONNACK received with code %s." % rc)
+        logger.info("CONNACK received with code %s." % rc)
 
     # with this callback you can see if your publish was successful
     def on_publish(self, client, userdata, mid, properties=None):
-        print("[MQTT message published] mid: " + str(mid))
+        logger.info("[MQTT message published] mid: " + str(mid))
 
     # print which topic was subscribed to
     def on_subscribe(self, client, userdata, mid, granted_qos, properties=None):
-        print("Subscribed: " + str(mid) + " " + str(granted_qos))
+        logger.info("Subscribed: " + str(mid) + " " + str(granted_qos))
 
     # print message, useful for checking if it was successful
     def on_message(self, client, userdata, msg):
-        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        logger.info(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
     
     def on_disconnect(self, client, userdata,rc=0):
         self.client.logging.debug(f"Disconnected result code: {str(rc)}")
